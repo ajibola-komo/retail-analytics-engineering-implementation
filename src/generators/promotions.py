@@ -61,22 +61,25 @@ def generate_promotions(conn, num_of_promotions):
     for idx in range(num_of_promotions):
         if idx == 0:
             promo_start_dates[idx] = first_date + timedelta(days=int(cooldown[idx]))
-            last_date = promo_start_dates[idx]
+            last_date = pd.Timestamp(promo_start_dates[idx])
         else:
             promo_start_dates[idx] = last_date + timedelta(days= int(cooldown[idx]))
-            last_date = promo_start_dates[idx]
+            last_date = pd.Timestamp(promo_start_dates[idx])
+    
     
     promo_end_dates = np.array([
-    s + timedelta(days=int(d))
+    pd.Timestamp(s) + timedelta(days=int(d))
     for s, d in zip(promo_start_dates, promo_duration)
-    ])
+    ])  
 
     promo_start_date_ids = np.array([
-        int(d.strftime('%Y%m%d')) for d in promo_start_dates
+    int(pd.Timestamp(d).strftime('%Y%m%d'))
+    for d in promo_start_dates
     ])
 
     promo_end_date_ids = np.array([
-        int(d.strftime('%Y%m%d')) for d in promo_end_dates
+    int(pd.Timestamp(d).strftime('%Y%m%d'))
+    for d in promo_end_dates
     ])
 
     is_active = np.array([bool( CURRENT_TIMESTAMP <= d ) for d in promo_end_dates])
@@ -103,12 +106,15 @@ def generate_promotions(conn, num_of_promotions):
     discount_values[fixed_discount_values] = np.random.choice(FIXED_AMOUNT_DISCOUNT_VALUES, p = FIXED_AMOUNT_DISCOUNT_WEIGHTING, size= fixed_discount_values.sum())
 
     
-    promo_names = np.array([gen_promo_name(d) for d in promo_start_dates])
+    promo_names = promo_names = np.array([
+    gen_promo_name(pd.Timestamp(d))
+    for d in promo_start_dates
+])
 
     promo_codes = np.array([
-        f"{pt[:3].upper()}-{d.year}{d.month:02d}-{pid}"
-        for pt, d, pid in zip(promo_types, promo_start_dates, promo_ids)
-    ])
+    f"{pt[:3].upper()}-{pd.Timestamp(d).year}{pd.Timestamp(d).month:02d}-{pid}"
+    for pt, d, pid in zip(promo_types, promo_start_dates, promo_ids)
+])
 
     promo_description_suffixes = np.empty(num_of_promotions, dtype = object)
 

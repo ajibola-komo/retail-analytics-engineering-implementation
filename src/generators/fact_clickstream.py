@@ -140,10 +140,14 @@ def generate_clickstreams(conn,num_of_sessions_y1, num_of_sessions_y2, num_of_se
 
     premium_startup_dates = premium_customers['signup_date'].to_numpy()
     premium_ids = premium_customers['customer_id'].to_numpy()
-    valid_premium_mask = (premium_startup_dates[np.newaxis, :] <= premium_starts[:, np.newaxis])
+    
+    sorted_premium_idx = np.argsort(premium_startup_dates)
+    sorted_premium_dates = premium_startup_dates[sorted_premium_idx]
+    sorted_premium_ids = premium_ids[sorted_premium_idx]
 
     for i, idx in enumerate(eligible_premium_sessions):
-        valid_ids = premium_ids[valid_premium_mask[i]]
+        cutoff = np.searchsorted(sorted_premium_dates, premium_starts[i], side='right')
+        valid_ids = sorted_premium_ids[:cutoff]
         if valid_ids.size > 0:
             customer_ids[idx] = np.random.choice(valid_ids)
             aov[idx] = 'High'
@@ -154,13 +158,17 @@ def generate_clickstreams(conn,num_of_sessions_y1, num_of_sessions_y2, num_of_se
 
     mid_startup_dates = mid_level_customers['signup_date'].to_numpy()
     mid_ids = mid_level_customers['customer_id'].to_numpy()
-    valid_mid_mask = (mid_startup_dates[np.newaxis, :] <= mid_starts[:, np.newaxis])
+
+    sorted_mid_idx = np.argsort(mid_startup_dates)
+    sorted_mid_dates = mid_startup_dates[sorted_mid_idx]
+    sorted_mid_ids = mid_ids[sorted_mid_idx]
 
     for i, idx in enumerate(eligible_mid_level_sessions):
-            valid_ids = mid_ids[valid_mid_mask[i]]
-            if valid_ids.size > 0:
-                customer_ids[idx] = np.random.choice(valid_ids)
-                aov[idx] = np.random.choice(['Low','Mid'], p = [0.4,0.6])
+        cutoff = np.searchsorted(sorted_mid_dates, mid_starts[i], side='right')
+        valid_ids = sorted_mid_ids[:cutoff]
+        if valid_ids.size > 0:
+            customer_ids[idx] = np.random.choice(valid_ids)
+            aov[idx] = np.random.choice(['Low','Mid'], p = [0.4,0.6])
 
     eligible_basic_level_sessions = np.where(is_customer_session & purchased_flag & linked_to_a_campaign_flag & prob_of_basic_sessions)[0]
 
@@ -168,14 +176,16 @@ def generate_clickstreams(conn,num_of_sessions_y1, num_of_sessions_y2, num_of_se
 
     basic_startup_dates = basic_level_customers['signup_date'].to_numpy()
     basic_ids = basic_level_customers['customer_id'].to_numpy()
-    valid_basic_mask = (basic_startup_dates[np.newaxis, :] <= basic_starts[:, np.newaxis])
-
+    sorted_basic_idx = np.argsort(basic_startup_dates)
+    sorted_basic_dates = basic_startup_dates[sorted_basic_idx]
+    sorted_basic_ids = basic_ids[sorted_basic_idx]
 
     for i, idx in enumerate(eligible_basic_level_sessions):
-            valid_ids = basic_ids[valid_basic_mask[i]]
-            if valid_ids.size > 0:
-                customer_ids[idx] = np.random.choice(valid_ids)
-                aov[idx] = 'Low'
+        cutoff = np.searchsorted(sorted_basic_dates, basic_starts[i], side='right')
+        valid_ids = sorted_basic_ids[:cutoff]
+        if valid_ids.size > 0:
+            customer_ids[idx] = np.random.choice(valid_ids)
+            aov[idx] = 'Low'
     
     eligible_customer_sessions = np.where(np.logical_and(is_customer_session, pd.isnull(customer_ids)))[0]
     customer_starts = session_start_times[eligible_customer_sessions].to_numpy()
