@@ -3,12 +3,11 @@ import numpy as np
 import pandas as pd
 from datetime import timedelta
 import re
-from datetime import timedelta
 from src.config.constants import (
     CUSTOMER_EMAIL_OPT_IN, CUSTOMER_GENDER, CUSTOMER_SIGNUP_CHANNEL, CUSTOMER_SMS_OPT_IN,
-    BASE_TRANSACTION_END_TIMESTAMP_Y2, CUSTOMER_EMAIL_DOMAIN, COMPANY_START_DATE, CUSTOMERS_PERSONA_MAP, CUSTOMER_PERSONAS, PERSONA_WEIGHTS
+    BASE_TRANSACTION_END_TIMESTAMP_Y3, CUSTOMER_EMAIL_DOMAIN, COMPANY_START_DATE, CUSTOMERS_PERSONA_MAP, CUSTOMER_PERSONAS, PERSONA_WEIGHTS
 )
-from src.config.paths import CUSTOMERS_CSV_PATH, CUSTOMERS_DDL_PATH, CUSTOMERS_PARQUET_PATH
+from src.config.paths import CUSTOMERS_DDL_PATH, CUSTOMERS_PARQUET_PATH
 
 FAKE = Faker("en_CA")
 
@@ -18,11 +17,7 @@ def generate_customers(conn, num_of_customers):
 
     conn.execute(create_db)
 
-    conn.execute("DELETE FROM DIM_CUSTOMER")
-
     customer_ids = np.arange(1,num_of_customers + 1)
-
-    #customer_genders = np.random.choice(CUSTOMER_GENDER, p = CUSTOMER_GENDER_WEIGHT, size = num_of_customers)
 
     urban_location_data = conn.execute("""select distinct s.location_id, l.location_weight from dim_store s join dim_location l on s.location_id = l.location_id 
                                        where l.location_type = 'Urban'""").df()
@@ -89,7 +84,7 @@ def generate_customers(conn, num_of_customers):
     ])
 
 
-    random_offset = int((BASE_TRANSACTION_END_TIMESTAMP_Y2.date() - COMPANY_START_DATE).total_seconds())
+    random_offset = int((BASE_TRANSACTION_END_TIMESTAMP_Y3.date() - COMPANY_START_DATE).total_seconds())
 
     time_off = np.random.randint(0,random_offset, size = num_of_customers)
 
@@ -107,7 +102,7 @@ def generate_customers(conn, num_of_customers):
     location_ids[practical_buyer_mask] = np.random.choice(rural_location_data['location_id'], p = rural_location_data['location_weight']/rural_location_data['location_weight'].sum(), size = practical_buyer_mask.sum())
 
     birth_dates = np.array([
-    BASE_TRANSACTION_END_TIMESTAMP_Y2 - timedelta(days=int(age * 365.25))
+    BASE_TRANSACTION_END_TIMESTAMP_Y3 - timedelta(days=int(age * 365.25))
     for age in customer_age
 ])
 

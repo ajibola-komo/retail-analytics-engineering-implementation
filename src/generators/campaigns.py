@@ -4,8 +4,8 @@ import pandas as pd
 from datetime import datetime, timedelta
 from src.config.paths import CAMPAIGNS_DDL_PATH, CAMPAIGNS_CSV_PATH, CAMPAIGNS_PARQUET_PATH
 from src.config.constants import (
-                BASE_TRANSACTION_TIME_STAMP_Y1, CAMPAIGN_CHANNEL, CAMPAIGN_CHANNELS_WEIGHTS, 
-                BASE_TRANSACTION_END_TIMESTAMP_Y2, CAMPAIGN_PERIOD_OF_VALIDITY,
+                BASE_TRANSACTION_TIME_STAMP_Y1, CAMPAIGN_CHANNEL, CAMPAIGN_CHANNELS_WEIGHTS_Y1, CAMPAIGN_CHANNELS_WEIGHTS_Y2, CAMPAIGN_CHANNELS_WEIGHTS_Y3,
+                BASE_TRANSACTION_END_TIMESTAMP_Y3, CAMPAIGN_PERIOD_OF_VALIDITY,Y1,Y2,Y3
               )
 
 def generate_campaigns(conn, number_of_campaigns):
@@ -23,7 +23,7 @@ def generate_campaigns(conn, number_of_campaigns):
 
     base_np = np.datetime64(BASE_TRANSACTION_TIME_STAMP_Y1)
 
-    total_duration = int((BASE_TRANSACTION_END_TIMESTAMP_Y2 - BASE_TRANSACTION_TIME_STAMP_Y1).total_seconds())
+    total_duration = int((BASE_TRANSACTION_END_TIMESTAMP_Y3 - BASE_TRANSACTION_TIME_STAMP_Y1).total_seconds())
 
     random_offset = np.random.randint(0,total_duration + 1, size = number_of_campaigns)
 
@@ -43,7 +43,15 @@ def generate_campaigns(conn, number_of_campaigns):
         f"Campaign #{id}" for id in campaign_ids
     ])
 
-    campaign_channels = np.random.choice(CAMPAIGN_CHANNEL, p = CAMPAIGN_CHANNELS_WEIGHTS, size=number_of_campaigns)
+    campaign_channels = np.empty(number_of_campaigns, dtype=object)
+    y1_campaign = np.where(campaign_start_dates < np.datetime64(f"{Y2}-01-01"))[0]
+    y2_campaign = np.where((campaign_start_dates >= np.datetime64(f"{Y2}-01-01")) & (campaign_start_dates < np.datetime64(f"{Y3}-01-01")))[0]
+    y3_campaign = np.where(campaign_start_dates >= np.datetime64(f"{Y3}-01-01"))[0]
+
+
+    campaign_channels[y1_campaign] = np.random.choice(CAMPAIGN_CHANNEL, p = CAMPAIGN_CHANNELS_WEIGHTS_Y1, size=len(y1_campaign))
+    campaign_channels[y2_campaign] = np.random.choice(CAMPAIGN_CHANNEL, p = CAMPAIGN_CHANNELS_WEIGHTS_Y2, size=len(y2_campaign))
+    campaign_channels[y3_campaign] = np.random.choice(CAMPAIGN_CHANNEL, p = CAMPAIGN_CHANNELS_WEIGHTS_Y3, size=len(y3_campaign))
 
     promo_index = np.empty(number_of_campaigns, dtype=object)
 

@@ -1,29 +1,14 @@
 import numpy as np
 import pandas as pd
-from src.config.paths import (TRANSACTIONS_DDL_PATH, TRANSACTIONS_CSV_PATH, TRANSACTIONS_PARQUET_PATH)
-from src.config.constants import (BASE_TRANSACTION_END_TIMESTAMP_Y1, PAYMENT_TYPES,TRANSACTION_STATUSES, 
-                                  PAYMENT_TYPES_WEIGHTS, TRANSACTION_WEIGHTS, PROB_OF_REPEATED_SESSION_Y1, PROB_OF_REPEATED_SESSION_Y2,
-                                  REPEATED_SESSION_SUBSET_PREMIUM, REPEATED_SESSION_SUBSET_MID, REPEATED_SESSION_SUBSET_BASIC)
+from src.config.paths import (TRANSACTIONS_DDL_PATH, TRANSACTIONS_PARQUET_PATH)
+from src.config.constants import (BASE_TRANSACTION_END_TIMESTAMP_Y1, 
+                                  BASE_TRANSACTION_END_TIMESTAMP_Y2, 
+                                  BASE_TRANSACTION_END_TIMESTAMP_Y3,
+                                  PAYMENT_TYPES,TRANSACTION_STATUSES, 
+                                  PAYMENT_TYPES_WEIGHTS, TRANSACTION_WEIGHTS_Y1, TRANSACTION_WEIGHTS_Y2, TRANSACTION_WEIGHTS_Y3)
 
 from src.generators.segment_customers import generate_customer_segments
 from src.generators.segment_stores import segment_stores
-
-#transaction_id - done
-#transaction_timestamp - done
-#transaction_date_id - done
-#customer_id - done
-#sales_channel - done
-#store_id
-#sales_channel - done
-#session_id - done
-#promo_id - done
-#campaign_id - done
-#transaction_subtotal - done
-#transaction_discount_applied - done
-#transaction_total - done
-#items_count - done
-#payment_type - done
-#transaction_status - done
 
 def generate_transactions(conn):
     create_db = TRANSACTIONS_DDL_PATH.read_text()
@@ -70,7 +55,15 @@ def generate_transactions(conn):
     sales_channels[is_in_store_transaction] = 'Store'
 
     payment_types = np.random.choice(PAYMENT_TYPES, size=len(transaction_ids), p=PAYMENT_TYPES_WEIGHTS)
-    transaction_statuses = np.random.choice(TRANSACTION_STATUSES, size=len(transaction_ids), p=TRANSACTION_WEIGHTS)
+
+    transaction_statuses = np.empty(total_transactions, dtype=object)
+    y1_mask = pd.to_datetime(transaction_timestamps) <= pd.Timestamp(BASE_TRANSACTION_END_TIMESTAMP_Y1)
+    y2_mask = (pd.to_datetime(transaction_timestamps) > pd.Timestamp(BASE_TRANSACTION_END_TIMESTAMP_Y1)) & \
+          (pd.to_datetime(transaction_timestamps) <= pd.Timestamp(BASE_TRANSACTION_END_TIMESTAMP_Y2))
+    y3_mask = pd.to_datetime(transaction_timestamps) > pd.Timestamp(BASE_TRANSACTION_END_TIMESTAMP_Y2)
+    transaction_statuses[y1_mask] = np.random.choice(TRANSACTION_STATUSES, size=np.sum(y1_mask), p=TRANSACTION_WEIGHTS_Y1)
+    transaction_statuses[y2_mask] = np.random.choice(TRANSACTION_STATUSES, size=np.sum(y2_mask), p=TRANSACTION_WEIGHTS_Y2)
+    transaction_statuses[y3_mask] = np.random.choice(TRANSACTION_STATUSES, size=np.sum(y3_mask), p=TRANSACTION_WEIGHTS_Y3)
 
     customer_segments = generate_customer_segments(conn)
 
@@ -96,25 +89,7 @@ def generate_transactions(conn):
 
     basic_level_customers["activity_weight"] = np.random.pareto(4, len(basic_level_customers)) + 1
 
-    #premium_customers_subset = premium_customers.sample(frac=REPEATED_SESSION_SUBSET_PREMIUM, weights = "activity_weight", replace = True)
-    #mid_level_customers_subset = mid_level_customers.sample(frac=REPEATED_SESSION_SUBSET_MID, weights = "activity_weight", replace = True)
-    #basic_level_customers_subset = basic_level_customers.sample(frac=REPEATED_SESSION_SUBSET_BASIC, weights = "activity_weight", replace = True)
-
-    #premium_subset_ids = premium_customers_subset['customer_id'].values
-    #premium_subset_signup_dates = premium_customers_subset['signup_date'].values
-    #mid_subset_ids = mid_level_customers_subset['customer_id'].values
-    #mid_subset_signup_dates = mid_level_customers_subset['signup_date'].values
-    #basic_subset_ids = basic_level_customers_subset['customer_id'].values
-    #basic_subset_signup_dates = basic_level_customers_subset['signup_date'].values
-
     in_store_indices = np.where(is_in_store_transaction)[0]
-
-    y1_mask = pd.to_datetime(transaction_timestamps[in_store_indices]) <= pd.Timestamp(BASE_TRANSACTION_END_TIMESTAMP_Y1)
-    #repeated_session = np.where(
-    #y1_mask,
-    #np.random.rand(len(in_store_indices)) <= PROB_OF_REPEATED_SESSION_Y1,
-    #np.random.rand(len(in_store_indices)) <= PROB_OF_REPEATED_SESSION_Y2
-#)
 
     locations_data = conn.execute("select location_id from dim_location").df()
     all_location_ids = locations_data['location_id']

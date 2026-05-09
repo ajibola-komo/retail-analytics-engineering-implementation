@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 from datetime import timedelta
-from src.config.paths import (STORES_DDL_PATH, STORES_CSV_PATH, STORES_PARQUET_PATH)
+from src.config.paths import (STORES_DDL_PATH, STORES_PARQUET_PATH)
 from src.config.constants import (COMPANY_START_TIMESTAMP, STORE_TYPES_MAP,STORE_TYPES,STORE_WEIGHTS, 
                                   BASE_TRANSACTION_TIME_STAMP_Y1, COMPANY_NAME, CURRENT_DATE)
 
