@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 from src.config.constants import (SALES_START_ID, TRANSACTION_START_ID, PRODUCT_RANGES, PRODUCT_WEIGHTS)
-from src.config.paths import (SALES_CSV_PATH, SALES_DDL_PATH, SALES_PARQUET_PATH)
+from src.config.paths import (SALES_DDL_PATH, SALES_PARQUET_PATH)
 from src.generators.month_distribution import generate_in_store_month_distribution
 
 def generate_sales(conn,num_of_transactions):
