@@ -33,6 +33,9 @@ def generate_sales(conn,num_of_transactions):
     n_mid_sessions = len(mid_aov_sessions)
     n_high_sessions = len(high_aov_sessions)
     n_sessions = n_low_sessions + n_mid_sessions + n_high_sessions
+    print(f'Low sessions is {n_low_sessions}')
+    print(f'High sessions is {n_high_sessions}')
+    print(f'Mid sessions is {n_mid_sessions}')
     remaining_transactions = max(0, num_of_transactions - n_sessions)
     transaction_timestamps = np.empty(num_of_transactions, dtype='datetime64[ns]')
     transaction_timestamps[:n_low_sessions] = low_aov_sessions['session_end_time'].values

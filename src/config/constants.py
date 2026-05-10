@@ -110,7 +110,7 @@ CUSTOMER_SMS_OPT_IN = [True, False]
 CUSTOMER_EMAIL_DOMAIN = ['@example.com','@bac.com','@xyz.com','@mail.com']
 
 SIGNUP_MONTH_WEIGHTS = [
-    0.90, 0.88, 0.92, 0.95,
+    1.1, 0.9, 0.92, 0.95,
     1.00, 1.02, 1.05, 1.03,
     1.00, 1.05, 1.20, 1.40
 ]

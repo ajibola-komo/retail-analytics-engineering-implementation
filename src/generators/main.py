@@ -40,7 +40,7 @@ def run_generators(conn):
     generate_promotions(conn, num_of_promotions=150)
     generate_campaigns(conn,number_of_campaigns=120)
     generate_clickstreams(conn,num_of_sessions_y1=4500000, num_of_sessions_y2=5500000, num_of_sessions_y3=7000000)
-    generate_sales(conn, num_of_transactions=1_800_000)
+    generate_sales(conn, num_of_transactions=1_200_000)
     generate_transactions(conn)
     generate_inventories(conn)
 
