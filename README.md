@@ -1,6 +1,6 @@
 # Elecmart Retail Analytics Pipeline
 
-An end-to-end data engineering project simulating a mid-sized electronics retailer, covering the full analytics lifecycle: synthetic data generation, cloud storage, warehouse ingestion, dbt transformation, and Tableau dashboards.
+An end-to-end data engineering project simulating a mid-sized electronics retailer's 3-year performance and covering the full analytics lifecycle: synthetic data generation, cloud storage, warehouse ingestion, dbt transformation, and Tableau dashboards.
 
 ---
 
@@ -9,6 +9,7 @@ An end-to-end data engineering project simulating a mid-sized electronics retail
 | Layer | Tool |
 |---|---|
 | Data generation | Python (Faker, NumPy) |
+| Compute & Orchestration | WS EC2 (Linux), Git-based deployment |
 | Storage | Amazon S3 |
 | Warehouse | Snowflake / DuckDB |
 | Transformation | dbt |
@@ -23,11 +24,9 @@ The pipeline follows a Medallion Architecture implemented in dbt.
 Python scripts → S3 (data lake) → Snowflake → dbt (Bronze → Silver → Gold) → Tableau
 ```
 
-- **Bronze** — raw ingested data with ingestion timestamps
+- **Bronze** — raw ingested data
 - **Silver** — cleaned, standardized, and enriched datasets
 - **Gold** — aggregated, analytics-ready data marts
-
----
 
 ## Synthetic Data Generation
 
@@ -40,7 +39,7 @@ All datasets are fully synthetic, generated using custom Python modules built on
 
 Generated datasets are exported as Parquet files for efficient storage and downstream ingestion into S3 and Snowflake.
 
-> The full data dictionary covering all 14 tables, column definitions, data types, and grain is available in `data-dictionary.md`.
+> The full data dictionary covering all 14 tables, column definitions, data types, and grain is available in `docs/data_dictionary/`.
 
 ---
 
@@ -50,16 +49,16 @@ Star schema with 4 fact tables and 10 dimension tables.
 
 | Table | Type | Grain | Approx. rows |
 |---|---|---|---|
-| `fact_transaction` | Fact | One row per transaction | 400,000 |
+| `fact_transaction` | Fact | One row per transaction | 2,500,000 |
 | `fact_sale` | Fact | One row per line item per transaction | 1,600,000 |
-| `fact_clickstream` | Fact | One row per web session | 5,000,000 |
+| `fact_clickstream` | Fact | One row per web session | 17,000,000 |
 | `inventory` | Fact | One row per store × product × month | 282,000 |
 | `dim_date` | Dimension | One row per calendar date | 3,650 |
-| `dim_customer` | Dimension | One row per customer | 50,000 |
+| `dim_customer` | Dimension | One row per customer | 200,000 |
 | `dim_product` | Dimension | One row per SKU | 470 |
 | `dim_store` | Dimension | One row per store | 50 |
-| `dim_promotion` | Dimension | One row per promotion | 50 |
-| `dim_campaign` | Dimension | One row per campaign | 800 |
+| `dim_promotion` | Dimension | One row per promotion | 300 |
+| `dim_campaign` | Dimension | One row per campaign | 500 |
 | `dim_category` | Dimension | One row per category | 10 |
 | `dim_subcategory` | Dimension | One row per subcategory | 28 |
 | `dim_brand` | Dimension | One row per brand | 50 |
@@ -69,8 +68,8 @@ Star schema with 4 fact tables and 10 dimension tables.
 
 ## Key Metrics
 ```
-Revenue         = SUM(transaction_subtotal)
-Profit          = Revenue − Cost
+Net Revenue         = SUM(transaction_total)
+Profit          = Net_Revenue − Cost
 Margin %        = Profit / Revenue
 Avg daily sales = Units sold / Number of days
 Inventory turns = Units sold / Average inventory
@@ -80,12 +79,15 @@ Inventory turns = Units sold / Average inventory
 
 ## Dashboards
 
-Four Tableau dashboards consume the Gold layer:
+Six Tableau dashboards consume the Gold layer:
 
-- **Sales Performance** — revenue trends, margins, top products, store performance
-- **Customer Insights** — segmentation, purchase behaviour, CLV, purchase frequency
-- **Marketing Performance** — promotion effectiveness, traffic sources, conversion rates
-- **E-Commerce Funnel** — visits → product views → cart → purchase, device breakdown
+- **Executive Dashboard** — tracks overall business performance including revenue trends, profit margins, top-performing products, and store-level performance.
+- **Sales Dashboard** — analyzes customer segmentation, purchasing behavior, customer lifetime value (CLV), and purchase frequency trends.
+- **Clickstream Dashboard** — monitors end-to-end user behavior including traffic sources, session journeys, funnel progression, and promotion effectiveness.
+- **Customer Dashboard** — provides a holistic view of user journeys from visits → product views → cart → purchase, including device-level engagement patterns.
+- **Clickstream Dashboard** — promotion effectiveness, traffic sources, conversion rates
+- **Marketing Dashboard** — evaluates campaign and channel performance through attribution analysis, traffic quality, and conversion efficiency.
+- **Inventory Dashboard** — tracks product demand dynamics, inventory movement, stock turnover, and category-level performance insights.
 
 ---
 
@@ -179,7 +181,7 @@ elecmart/
 |   |   |── products.py
 |   |   |── promotions.py
 |   |   |── segment_customers.py
-|   |   |── stores.py
+|   |   |── segment_stores.py
 │   │   └── subcategories.py
 |   |   
 |   |── snowflake_setup/
