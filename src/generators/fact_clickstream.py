@@ -57,26 +57,84 @@ def generate_clickstreams(conn,num_of_sessions_y1, num_of_sessions_y2, num_of_se
 
     device_types = np.empty(total_sessions, dtype=object)
 
-    number_of_pages_viewed = np.where(durations <= 2, np.random.randint(1,4,size=total_sessions),
-                                    np.where((durations > 2) & (durations <= 5), np.random.randint(4,7, size = total_sessions),
-                                             np.random.randint(7,13, size= total_sessions)))
+    y1_sessions = (session_start_times >= pd.to_datetime(BASE_TRANSACTION_TIME_STAMP_Y1)) & (session_start_times <= pd.to_datetime(BASE_TRANSACTION_END_TIMESTAMP_Y1))
+    y2_sessions = (session_start_times >= pd.to_datetime(BASE_TRANSACTION_TIME_STAMP_Y2)) & (session_start_times <= pd.to_datetime(BASE_TRANSACTION_END_TIMESTAMP_Y2))
+    y3_sessions = (session_start_times >= pd.to_datetime(BASE_TRANSACTION_TIME_STAMP_Y3)) & (session_start_times <= pd.to_datetime(BASE_TRANSACTION_END_TIMESTAMP_Y3))
+
+    device_types[y1_sessions] = np.random.choice(DEVICE_TYPES, p = DEVICE_WEIGHTS_Y1, size=y1_sessions.sum())
+    device_types[y2_sessions] = np.random.choice(DEVICE_TYPES, p = DEVICE_WEIGHTS_Y2, size=y2_sessions.sum())
+    device_types[y3_sessions] = np.random.choice(DEVICE_TYPES, p = DEVICE_WEIGHTS_Y3, size=y3_sessions.sum())
+
+    mobile_sessions_y1 = (device_types == "Mobile") & y1_sessions
+    mobile_sessions_y2 = (device_types == "Mobile") & y2_sessions
+    mobile_sessions_y3 = (device_types == "Mobile") & y3_sessions
+    tablet_sessions_y1 = (device_types == "Tablet") & y1_sessions
+    tablet_sessions_y2 = (device_types == "Tablet") & y2_sessions
+    tablet_sessions_y3 = (device_types == "Tablet") & y3_sessions
+    desktop_sessions_y1 = (device_types == "Desktop") & y1_sessions
+    desktop_sessions_y2 = (device_types == "Desktop") & y2_sessions
+    desktop_sessions_y3 = (device_types == "Desktop") & y3_sessions
+
+    number_of_pages_viewed = np.zeros(total_sessions, dtype=int)
+
+    mobile_y1_durations = durations[mobile_sessions_y1]
+    mobile_y2_durations = durations[mobile_sessions_y2]
+    mobile_y3_durations = durations[mobile_sessions_y3]
+    tablet_y1_durations = durations[tablet_sessions_y1]
+    tablet_y2_durations = durations[tablet_sessions_y2]
+    tablet_y3_durations = durations[tablet_sessions_y3]
+    desktop_y1_durations = durations[desktop_sessions_y1]
+    desktop_y2_durations = durations[desktop_sessions_y2]
+    desktop_y3_durations = durations[desktop_sessions_y3]
+
+    number_of_pages_viewed[mobile_sessions_y1] = np.where(mobile_y1_durations <= 2, np.random.randint(1,4,size=mobile_sessions_y1.sum()),
+                                    np.where((mobile_y1_durations > 2) & (mobile_y1_durations <= 5), np.random.randint(4,7, size = mobile_sessions_y1.sum()),
+                                             np.random.randint(7,13, size= mobile_sessions_y1.sum())))
+    
+
+    number_of_pages_viewed[tablet_sessions_y1] = np.where(tablet_y1_durations <= 2, np.random.randint(1,5,size=tablet_sessions_y1.sum()),
+                                    np.where((tablet_y1_durations > 2) & (tablet_y1_durations <= 5), np.random.randint(5,8, size = tablet_sessions_y1.sum()),
+                                             np.random.randint(8,15, size= tablet_sessions_y1.sum())))
+    
+    number_of_pages_viewed[desktop_sessions_y1] = np.where(desktop_y1_durations <= 2, np.random.randint(1,6,size=desktop_sessions_y1.sum()),
+                                    np.where((desktop_y1_durations > 2) & (desktop_y1_durations <= 5), np.random.randint(6,10, size = desktop_sessions_y1.sum()),
+                                             np.random.randint(10,20, size= desktop_sessions_y1.sum())))
+    
+    number_of_pages_viewed[mobile_sessions_y2] = np.where(mobile_y2_durations <= 2, np.random.randint(1,4,size=mobile_sessions_y2.sum()),
+                                    np.where((mobile_y2_durations > 2) & (mobile_y2_durations <= 5), np.random.randint(4,7, size = mobile_sessions_y2.sum()),
+                                             np.random.randint(7,13, size= mobile_sessions_y2.sum())))
+    
+    number_of_pages_viewed[tablet_sessions_y2] = np.where(tablet_y2_durations <= 2, np.random.randint(1,5,size=tablet_sessions_y2.sum()),
+                                    np.where((tablet_y2_durations > 2) & (tablet_y2_durations <= 5), np.random.randint(5,8, size = tablet_sessions_y2.sum()),
+                                             np.random.randint(8,15, size= tablet_sessions_y2.sum())))
+    
+    number_of_pages_viewed[desktop_sessions_y2] = np.where(desktop_y2_durations <= 2, np.random.randint(1,6,size=desktop_sessions_y2.sum()),
+                                    np.where((desktop_y2_durations > 2) & (desktop_y2_durations <= 5), np.random.randint(6,10, size = desktop_sessions_y2.sum()),
+                                             np.random.randint(10,20, size= desktop_sessions_y2.sum())))
+    
+    number_of_pages_viewed[mobile_sessions_y3] = np.where(mobile_y3_durations <= 2, np.random.randint(1,4,size=mobile_sessions_y3.sum()),
+                                    np.where((mobile_y3_durations > 2) & (mobile_y3_durations <= 5), np.random.randint(4,7, size = mobile_sessions_y3.sum()),
+                                             np.random.randint(7,13, size= mobile_sessions_y3.sum())))
+    
+    number_of_pages_viewed[tablet_sessions_y3] = np.where(tablet_y3_durations <= 2, np.random.randint(1,5,size=tablet_sessions_y3.sum()),
+                                    np.where((tablet_y3_durations > 2) & (tablet_y3_durations <= 5), np.random.randint(5,8, size = tablet_sessions_y3.sum()),
+                                             np.random.randint(8,15, size= tablet_sessions_y3.sum())))
+    
+    number_of_pages_viewed[desktop_sessions_y3] = np.where(desktop_y3_durations <= 2, np.random.randint(1,6,size=desktop_sessions_y3.sum()),
+                                    np.where((desktop_y3_durations > 2) & (desktop_y3_durations <= 5), np.random.randint(6,10, size = desktop_sessions_y3.sum()),
+                                             np.random.randint(10,20, size= desktop_sessions_y3.sum())))  
 
 
     aov = np.full(total_sessions, None, dtype=object)
 
     product_page_visited_flag = number_of_pages_viewed >= 4
-    y1_sessions = (session_start_times >= pd.to_datetime(BASE_TRANSACTION_TIME_STAMP_Y1)) & (session_start_times <= pd.to_datetime(BASE_TRANSACTION_END_TIMESTAMP_Y1))
-    y2_sessions = (session_start_times >= pd.to_datetime(BASE_TRANSACTION_TIME_STAMP_Y2)) & (session_start_times <= pd.to_datetime(BASE_TRANSACTION_END_TIMESTAMP_Y2))
-    y3_sessions = (session_start_times >= pd.to_datetime(BASE_TRANSACTION_TIME_STAMP_Y3)) & (session_start_times <= pd.to_datetime(BASE_TRANSACTION_END_TIMESTAMP_Y3))
     
     added_to_cart_flag = np.zeros(total_sessions, dtype=bool)
     purchased_flag = np.zeros(total_sessions, dtype=bool)
     is_customer_session = np.zeros(total_sessions, dtype=bool)
     probability_of_campaign_linked = np.zeros(total_sessions, dtype=bool)
 
-    device_types[y1_sessions] = np.random.choice(DEVICE_TYPES, p = DEVICE_WEIGHTS_Y1, size=y1_sessions.sum())
-    device_types[y2_sessions] = np.random.choice(DEVICE_TYPES, p = DEVICE_WEIGHTS_Y2, size=y2_sessions.sum())
-    device_types[y3_sessions] = np.random.choice(DEVICE_TYPES, p = DEVICE_WEIGHTS_Y3, size=y3_sessions.sum())
+    
 
     probability_of_campaign_linked[y1_sessions] = np.random.rand(y1_sessions.sum()) <= PROB_OF_CAMPAIGN_LINKED_Y1
     probability_of_campaign_linked[y2_sessions] = np.random.rand(y2_sessions.sum()) <= PROB_OF_CAMPAIGN_LINKED_Y2
