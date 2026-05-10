@@ -109,21 +109,21 @@ def generate_clickstreams(conn,num_of_sessions_y1, num_of_sessions_y2, num_of_se
     traffic_sources[~linked_to_a_campaign_flag & y2_sessions] = np.random.choice(TRAFFIC_SOURCES, p = TRAFFIC_WEIGHTS_Y2, size=(~linked_to_a_campaign_flag & y2_sessions).sum())
     traffic_sources[~linked_to_a_campaign_flag & y3_sessions] = np.random.choice(TRAFFIC_SOURCES, p = TRAFFIC_WEIGHTS_Y3, size=(~linked_to_a_campaign_flag & y3_sessions).sum())
 
-    y1_product_sessions_campaign = y1_sessions & product_page_visited_flag & traffic_sources == "Campaign"
-    y2_product_sessions_campaign = y2_sessions & product_page_visited_flag & traffic_sources == "Campaign"
-    y3_product_sessions_campaign = y3_sessions & product_page_visited_flag & traffic_sources == "Campaign"
-    y1_product_sessions_direct = y1_sessions & product_page_visited_flag & traffic_sources == "Direct"
-    y2_product_sessions_direct = y2_sessions & product_page_visited_flag & traffic_sources == "Direct"
-    y3_product_sessions_direct = y3_sessions & product_page_visited_flag & traffic_sources == "Direct"
-    y1_product_sessions_organic = y1_sessions & product_page_visited_flag & traffic_sources == "Organic"
-    y2_product_sessions_organic = y2_sessions & product_page_visited_flag & traffic_sources == "Organic"
-    y3_product_sessions_organic = y3_sessions & product_page_visited_flag & traffic_sources == "Organic"
-    y1_product_sessions_paid_search = y1_sessions & product_page_visited_flag & traffic_sources == "Paid Search"
-    y2_product_sessions_paid_search = y2_sessions & product_page_visited_flag & traffic_sources == "Paid Search"
-    y3_product_sessions_paid_search = y3_sessions & product_page_visited_flag & traffic_sources == "Paid Search"
-    y1_product_sessions_referral = y1_sessions & product_page_visited_flag & traffic_sources == "Referral"
-    y2_product_sessions_referral = y2_sessions & product_page_visited_flag & traffic_sources == "Referral"
-    y3_product_sessions_referral = y3_sessions & product_page_visited_flag & traffic_sources == "Referral"
+    y1_product_sessions_campaign = y1_sessions & product_page_visited_flag & (traffic_sources == "Campaign")
+    y2_product_sessions_campaign = y2_sessions & product_page_visited_flag & (traffic_sources == "Campaign")
+    y3_product_sessions_campaign = y3_sessions & product_page_visited_flag & (traffic_sources == "Campaign")
+    y1_product_sessions_direct = y1_sessions & product_page_visited_flag & (traffic_sources == "Direct")
+    y2_product_sessions_direct = y2_sessions & product_page_visited_flag & (traffic_sources == "Direct")
+    y3_product_sessions_direct = y3_sessions & product_page_visited_flag & (traffic_sources == "Direct")
+    y1_product_sessions_organic = y1_sessions & product_page_visited_flag & (traffic_sources == "Organic")
+    y2_product_sessions_organic = y2_sessions & product_page_visited_flag & (traffic_sources == "Organic")
+    y3_product_sessions_organic = y3_sessions & product_page_visited_flag & (traffic_sources == "Organic")
+    y1_product_sessions_paid_search = y1_sessions & product_page_visited_flag & (traffic_sources == "Paid Search")
+    y2_product_sessions_paid_search = y2_sessions & product_page_visited_flag & (traffic_sources == "Paid Search")
+    y3_product_sessions_paid_search = y3_sessions & product_page_visited_flag & (traffic_sources == "Paid Search")
+    y1_product_sessions_referral = y1_sessions & product_page_visited_flag & (traffic_sources == "Referral")
+    y2_product_sessions_referral = y2_sessions & product_page_visited_flag & (traffic_sources == "Referral")
+    y3_product_sessions_referral = y3_sessions & product_page_visited_flag & (traffic_sources == "Referral")
 
     added_to_cart_flag[y1_product_sessions_campaign] = (
     np.random.rand(y1_product_sessions_campaign
