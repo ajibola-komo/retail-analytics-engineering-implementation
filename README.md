@@ -49,7 +49,7 @@ Star schema with 4 fact tables and 10 dimension tables.
 
 | Table | Type | Grain | Approx. rows |
 |---|---|---|---|
-| `fact_transaction` | Fact | One row per transaction | 2,500,000 |
+| `fact_transaction` | Fact | One row per transaction | 1,200,000 |
 | `fact_sale` | Fact | One row per line item per transaction | 1,600,000 |
 | `fact_clickstream` | Fact | One row per web session | 17,000,000 |
 | `inventory` | Fact | One row per store × product × month | 282,000 |
