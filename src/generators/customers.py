@@ -5,7 +5,7 @@ from datetime import timedelta
 import re
 from src.config.constants import (
     CUSTOMER_EMAIL_OPT_IN, CUSTOMER_GENDER, CUSTOMER_SIGNUP_CHANNEL, CUSTOMER_SMS_OPT_IN,
-    BASE_TRANSACTION_END_TIMESTAMP_Y3, CUSTOMER_EMAIL_DOMAIN, COMPANY_START_DATE, CUSTOMERS_PERSONA_MAP, CUSTOMER_PERSONAS, PERSONA_WEIGHTS
+    BASE_TRANSACTION_END_TIMESTAMP_Y3, CUSTOMER_EMAIL_DOMAIN, COMPANY_START_DATE, CUSTOMERS_PERSONA_MAP, CUSTOMER_PERSONAS, PERSONA_WEIGHTS, SIGNUP_MONTH_WEIGHTS
 )
 from src.config.paths import CUSTOMERS_DDL_PATH, CUSTOMERS_PARQUET_PATH
 
@@ -84,11 +84,23 @@ def generate_customers(conn, num_of_customers):
     ])
 
 
-    random_offset = int((BASE_TRANSACTION_END_TIMESTAMP_Y3.date() - COMPANY_START_DATE).total_seconds())
+    date_range = pd.date_range(
+    start=COMPANY_START_DATE,
+    end=BASE_TRANSACTION_END_TIMESTAMP_Y3.date(),
+    freq='D'
+)
 
-    time_off = np.random.randint(0,random_offset, size = num_of_customers)
+    signup_weights = np.array([SIGNUP_MONTH_WEIGHTS[date.month - 1] for date in date_range])
+    signup_weights = signup_weights / signup_weights.sum()
 
-    signup_date = np.array([COMPANY_START_DATE + timedelta(seconds = int(t) )for t in time_off])
+    sampled_dates = np.random.choice(date_range, size=num_of_customers, p=signup_weights)
+
+
+    random_seconds = np.random.randint(0, 86400, size=num_of_customers)
+    signup_date = np.array([
+    pd.Timestamp(d).date() + timedelta(seconds=int(s))
+    for d, s in zip(sampled_dates, random_seconds)
+    ])
 
     signup_date_ids = np.array([
     int(d.strftime('%Y%m%d')) for d in signup_date
@@ -99,7 +111,10 @@ def generate_customers(conn, num_of_customers):
     location_ids[bargain_hunter_mask] = np.random.choice(urban_location_data['location_id'], p = urban_location_data['location_weight']/urban_location_data['location_weight'].sum(), size = bargain_hunter_mask.sum())
     location_ids[gift_shopper_mask] = np.random.choice(suburban_location_data['location_id'], p = suburban_location_data['location_weight']/suburban_location_data['location_weight'].sum(), size = gift_shopper_mask.sum())
     location_ids[everyday_shopper_mask] = np.random.choice(suburban_location_data['location_id'], p = suburban_location_data['location_weight']/suburban_location_data['location_weight'].sum(), size = everyday_shopper_mask.sum())
-    location_ids[practical_buyer_mask] = np.random.choice(rural_location_data['location_id'], p = rural_location_data['location_weight']/rural_location_data['location_weight'].sum(), size = practical_buyer_mask.sum())
+    if len(rural_location_data) > 0:  # In case there are no rural locations, avoid error
+        location_ids[practical_buyer_mask] = np.random.choice(rural_location_data['location_id'], p = rural_location_data['location_weight']/rural_location_data['location_weight'].sum(), size = practical_buyer_mask.sum())
+    else:
+        location_ids[practical_buyer_mask] = np.random.choice(suburban_location_data['location_id'], p = suburban_location_data['location_weight']/suburban_location_data['location_weight'].sum(), size = practical_buyer_mask.sum())
 
     birth_dates = np.array([
     BASE_TRANSACTION_END_TIMESTAMP_Y3 - timedelta(days=int(age * 365.25))

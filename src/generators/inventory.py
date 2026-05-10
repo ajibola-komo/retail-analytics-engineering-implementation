@@ -67,17 +67,18 @@ def generate_inventories(conn):
     # ── 5. Replenishment with intentional stockout variance ───────────────────
     #   ~20 % of records are deliberately under-replenished so that closing
     #   stock can hit zero and produce realistic stockout / backorder events.
-    n = len(stock_skeleton)
-    replenishment_factor = np.where(
-        np.random.rand(n) < 0.20,
-        np.random.uniform(0.5, 0.9, n),   # under-stocked → potential stockout
-        np.random.uniform(1.1, 1.5, n)    # over-stocked  → healthy buffer
-    )
 
-    stock_skeleton['received_stock'] = np.maximum(
-        np.random.randint(0, 10, size=n),
-        (stock_skeleton['sold_units'] * replenishment_factor).astype(int)
+    n = len(stock_skeleton)
+    
+    stock_skeleton['received_stock'] = np.where(
+    stock_skeleton['sold_units'] == 0,
+    0,
+    np.where(
+        np.random.rand(n) < 0.20,
+        (stock_skeleton['sold_units'] * np.random.uniform(0.5, 0.9, n)).astype(int),
+        (stock_skeleton['sold_units'] * np.random.uniform(1.1, 1.5, n)).astype(int)
     )
+)
 
     # ── 6. Shrinkage ──────────────────────────────────────────────────────────
     #   Use randint(1, 5) so records flagged as shrinkage events actually carry
@@ -100,8 +101,11 @@ def generate_inventories(conn):
     has_shrinkage[isyear2] = np.random.rand(len(isyear2)) <= SHRINKAGE_RATE_Y2
     has_shrinkage[isyear3] = np.random.rand(len(isyear3)) <= SHRINKAGE_RATE_Y3
 
-    stock_skeleton.loc[has_shrinkage, 'shrinkage_loss'] = np.random.randint(
-        1, 5, size=has_shrinkage.sum()
+    shrinkage_eligible = has_shrinkage & (stock_skeleton['sold_units'] > 0)
+
+    stock_skeleton.loc[shrinkage_eligible, 'shrinkage_loss'] = np.maximum(1,
+    (stock_skeleton.loc[shrinkage_eligible, 'sold_units'] * 
+     np.random.uniform(0.01, 0.03, size=shrinkage_eligible.sum())).astype(int)
     )
 
     # ── 7. Compute closing stock via cumulative window (DuckDB) ───────────────

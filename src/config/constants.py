@@ -109,6 +109,12 @@ CUSTOMER_EMAIL_OPT_IN = [True, False]
 CUSTOMER_SMS_OPT_IN = [True, False]
 CUSTOMER_EMAIL_DOMAIN = ['@example.com','@bac.com','@xyz.com','@mail.com']
 
+SIGNUP_MONTH_WEIGHTS = [
+    0.90, 0.88, 0.92, 0.95,
+    1.00, 1.02, 1.05, 1.03,
+    1.00, 1.05, 1.20, 1.40
+]
+
 #------------------------------------- STORES TABLE -----------------------------------
 COMPANY_NAME = 'ELEC-MART'
 STORE_TYPES_MAP = {
@@ -182,6 +188,24 @@ PROMO_TYPE_MAP = {
 PROMO_TYPES = list(PROMO_TYPE_MAP.keys())
 PROMO_TYPES_WEIGHTS = [PROMO_TYPE_MAP[k]['weight'] for k in PROMO_TYPES]
 
+
+MONTH_WEIGHTS_PROMOTIONS_Y1 = [
+    0.70, 0.75, 0.85, 0.95,
+    1.00, 1.05, 1.08, 1.10,
+    1.05, 1.15, 1.55, 1.80
+]
+MONTH_WEIGHTS_PROMOTIONS_Y2 = [
+    0.72, 0.78, 0.88, 0.97,
+    1.02, 1.08, 1.10, 1.12,
+    1.08, 1.18, 1.60, 1.85
+]
+MONTH_WEIGHTS_PROMOTIONS_Y3 = [
+    0.75, 0.80, 0.90, 1.00,
+    1.05, 1.10, 1.12, 1.15,
+    1.10, 1.20, 1.65, 1.90
+]
+
+
 #------------------------------------------------ CAMPAIGNS_TABLE ----------------------------------
 CAMPAIGN_LINK_MAP = {
     'Promo':{
@@ -204,6 +228,22 @@ CAMPAIGN_COOLDOWN_PERIODS = [2,5,7]
 
 CAMPAIGN_PERIOD_OF_VALIDITY = [3,12,24]
 
+MONTH_WEIGHTS_CAMPAIGNS_Y1 = [
+    0.65, 0.70, 0.80, 0.90,
+    0.98, 1.05, 1.10, 1.12,
+    1.08, 1.20, 1.60, 1.85
+]
+MONTH_WEIGHTS_CAMPAIGNS_Y2 = [
+    0.68, 0.73, 0.83, 0.93,
+    1.00, 1.08, 1.12, 1.15,
+    1.10, 1.22, 1.65, 1.90
+]
+MONTH_WEIGHTS_CAMPAIGNS_Y3 = [
+    0.70, 0.75, 0.85, 0.95,
+    1.02, 1.10, 1.15, 1.18,
+    1.12, 1.25, 1.70, 1.95
+]
+
 #------------------------------------------- CLICKSTREAMS ------------------------------------------------
 SESSION_MINUTES = [0.5, 1, 2, 3, 5, 8, 12]
 SESSION_WEIGHTS = [0.15, 0.20, 0.25, 0.20, 0.12, 0.06, 0.02]
@@ -218,55 +258,67 @@ TRAFFIC_WEIGHTS_Y1 = [0.40, 0.2, 0.22, 0.18]
 TRAFFIC_WEIGHTS_Y2 = [0.35, 0.25, 0.25, 0.15]
 TRAFFIC_WEIGHTS_Y3 = [0.30, 0.30, 0.25, 0.15]
 
-PROB_OF_CUSTOMER_SESSION_Y1 = 0.65        # Known vs guest
-PROB_OF_CUSTOMER_SESSION_Y2 = 0.70        # Known vs guest
-PROB_OF_CUSTOMER_SESSION_Y3 = 0.65        # Known vs guest
+PROB_OF_CUSTOMER_SESSION_Y1 = 0.55        # Known vs guest
+PROB_OF_CUSTOMER_SESSION_Y2 = 0.60        # Known vs guest
+PROB_OF_CUSTOMER_SESSION_Y3 = 0.63        # Known vs guest
+
+# ── Year 1 ────────────────────────────────────────────────────────────────────
+# Effective rates: Organic 4.5%, Paid 6.2%, Direct 4.2%, Referral 3.7%, Campaign 7.2%
 
 # Intent (browse → cart)
-PROB_INTENT_ORGANIC_Y1 = 0.32
-PROB_INTENT_PAID_SEARCH_Y1 = 0.38
-PROB_INTENT_DIRECT_Y1 = 0.28
-PROB_INTENT_REFERRAL_Y1 = 0.30
-PROB_INTENT_CAMPAIGN_Y1 = 0.40
+PROB_INTENT_ORGANIC_Y1      = 0.18
+PROB_INTENT_PAID_SEARCH_Y1  = 0.22
+PROB_INTENT_DIRECT_Y1       = 0.16
+PROB_INTENT_REFERRAL_Y1     = 0.17
+PROB_INTENT_CAMPAIGN_Y1     = 0.24
 
 # Purchase (cart → buy)
-PROB_PURCHASE_ORGANIC_Y1 = 0.28
-PROB_PURCHASE_PAID_SEARCH_Y1 = 0.32
-PROB_PURCHASE_DIRECT_Y1 = 0.30
-PROB_PURCHASE_REFERRAL_Y1 = 0.25
-PROB_PURCHASE_CAMPAIGN_Y1 = 0.35
+PROB_PURCHASE_ORGANIC_Y1      = 0.25
+PROB_PURCHASE_PAID_SEARCH_Y1  = 0.28
+PROB_PURCHASE_DIRECT_Y1       = 0.26
+PROB_PURCHASE_REFERRAL_Y1     = 0.22
+PROB_PURCHASE_CAMPAIGN_Y1     = 0.30
+
+# ── Year 2 ────────────────────────────────────────────────────────────────────
+# Effective rates: Organic 5.4%, Paid 7.5%, Direct 5.1%, Referral 4.5%, Campaign 8.8%
+# ~20% relative improvement over Y1 — brand maturity + better targeting
 
 # Intent
-PROB_INTENT_ORGANIC_Y2 = 0.38
-PROB_INTENT_PAID_SEARCH_Y2 = 0.44
-PROB_INTENT_DIRECT_Y2 = 0.32
-PROB_INTENT_REFERRAL_Y2 = 0.34
-PROB_INTENT_CAMPAIGN_Y2 = 0.46
+PROB_INTENT_ORGANIC_Y2      = 0.22
+PROB_INTENT_PAID_SEARCH_Y2  = 0.27
+PROB_INTENT_DIRECT_Y2       = 0.20
+PROB_INTENT_REFERRAL_Y2     = 0.21
+PROB_INTENT_CAMPAIGN_Y2     = 0.29
 
 # Purchase
-PROB_PURCHASE_ORGANIC_Y2 = 0.32
-PROB_PURCHASE_PAID_SEARCH_Y2 = 0.38
-PROB_PURCHASE_DIRECT_Y2 = 0.34
-PROB_PURCHASE_REFERRAL_Y2 = 0.28
-PROB_PURCHASE_CAMPAIGN_Y2 = 0.42
+PROB_PURCHASE_ORGANIC_Y2      = 0.28
+PROB_PURCHASE_PAID_SEARCH_Y2  = 0.32
+PROB_PURCHASE_DIRECT_Y2       = 0.29
+PROB_PURCHASE_REFERRAL_Y2     = 0.25
+PROB_PURCHASE_CAMPAIGN_Y2     = 0.34
+
+# ── Year 3 ────────────────────────────────────────────────────────────────────
+# Effective rates: Organic 6.5%, Paid 9.0%, Direct 6.1%, Referral 5.4%, Campaign 10.8%
+# ~20% relative improvement over Y2 — loyalty + personalisation kicking in
 
 # Intent
-PROB_INTENT_ORGANIC_Y3 = 0.45
-PROB_INTENT_PAID_SEARCH_Y3 = 0.52
-PROB_INTENT_DIRECT_Y3 = 0.38
-PROB_INTENT_REFERRAL_Y3 = 0.40
-PROB_INTENT_CAMPAIGN_Y3 = 0.55
+PROB_INTENT_ORGANIC_Y3      = 0.26
+PROB_INTENT_PAID_SEARCH_Y3  = 0.32
+PROB_INTENT_DIRECT_Y3       = 0.24
+PROB_INTENT_REFERRAL_Y3     = 0.25
+PROB_INTENT_CAMPAIGN_Y3     = 0.35
 
 # Purchase
-PROB_PURCHASE_ORGANIC_Y3 = 0.38
-PROB_PURCHASE_PAID_SEARCH_Y3 = 0.45
-PROB_PURCHASE_DIRECT_Y3 = 0.40
-PROB_PURCHASE_REFERRAL_Y3 = 0.33
-PROB_PURCHASE_CAMPAIGN_Y3 = 0.50
+PROB_PURCHASE_ORGANIC_Y3      = 0.32
+PROB_PURCHASE_PAID_SEARCH_Y3  = 0.36
+PROB_PURCHASE_DIRECT_Y3       = 0.33
+PROB_PURCHASE_REFERRAL_Y3     = 0.28
+PROB_PURCHASE_CAMPAIGN_Y3     = 0.38
 
-PROB_OF_CAMPAIGN_LINKED_Y1 = 0.35         # Attribution
-PROB_OF_CAMPAIGN_LINKED_Y2 = 0.40         # Attribution
-PROB_OF_CAMPAIGN_LINKED_Y3 = 0.45         # Attribution
+# ── Attribution ───────────────────────────────────────────────────────────────
+PROB_OF_CAMPAIGN_LINKED_Y1  = 0.35
+PROB_OF_CAMPAIGN_LINKED_Y2  = 0.40
+PROB_OF_CAMPAIGN_LINKED_Y3  = 0.45
 
 PROB_OF_REPEATED_SESSION_Y1 = 0.2               # Repeat visits/sessions
 PROB_OF_REPEATED_SESSION_Y2 = 0.25               # Repeat visits/sessions
@@ -305,8 +357,8 @@ TRANSACTION_TOTAL_DISTRIBUTION = [0.7,0.25,0.05]
 
 #INVENTORY TABLE
 SHRINKAGE_RATE_Y1 = 0.02
-SHRINKAGE_RATE_Y2 = 0.05
-SHRINKAGE_RATE_Y3 = 0.75
+SHRINKAGE_RATE_Y2 = 0.04
+SHRINKAGE_RATE_Y3 = 0.06
 
 INVENTORY_START_ID = 1_000_001
 

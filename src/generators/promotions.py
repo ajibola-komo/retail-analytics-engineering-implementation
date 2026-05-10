@@ -7,9 +7,13 @@ from src.config.constants import (PROMO_TYPE_MAP, PROMO_TYPES, PROMO_TYPES_WEIGH
                                   PROMOTIONS_DISCOUNT_TYPES_WEIGHTING_Y3,
                                   PRE_HOLIDAY_PROMOTIONS_NAMES, OTHER_PROMOTIONS_NAMES, 
                                   JAN_FEB_PROMOTIONS_NAMES, WEEKEND_PROMOTIONS_NAMES,
-                                  MID_YEAR_PROMOTIONS_NAMES, Y2, Y2, Y3, Y3, YEAR_END_PROMOTIONS_NAMES, BLACK_FRIDAY_PROMOTION_NAMES,
+                                  MID_YEAR_PROMOTIONS_NAMES, Y2, Y3, YEAR_END_PROMOTIONS_NAMES, BLACK_FRIDAY_PROMOTION_NAMES,
                                   PERCENTAGE_DISCOUNT_VALUES, PERCENTAGE_DISCOUNT_WEIGHTING, FIXED_AMOUNT_DISCOUNT_VALUES, 
-                                  FIXED_AMOUNT_DISCOUNT_WEIGHTING,BASE_TRANSACTION_TIME_STAMP_Y1, CURRENT_TIMESTAMP)
+                                  FIXED_AMOUNT_DISCOUNT_WEIGHTING,BASE_TRANSACTION_TIME_STAMP_Y1, BASE_TRANSACTION_END_TIMESTAMP_Y3,
+                                  MONTH_WEIGHTS_PROMOTIONS_Y1, MONTH_WEIGHTS_PROMOTIONS_Y2, MONTH_WEIGHTS_PROMOTIONS_Y3,
+                                  BASE_TRANSACTION_END_TIMESTAMP_Y1, BASE_TRANSACTION_END_TIMESTAMP_Y2, BASE_TRANSACTION_TIME_STAMP_Y2, BASE_TRANSACTION_TIME_STAMP_Y3,
+                                  CURRENT_TIMESTAMP
+                                  )
 
 def gen_promo_name(start_date):
 
@@ -41,31 +45,40 @@ def generate_promotions(conn, num_of_promotions):
     promo_ids = np.arange(1,num_of_promotions + 1)
 
     promo_types = np.random.choice(PROMO_TYPES, p = PROMO_TYPES_WEIGHTS, size = num_of_promotions)
-    
-    cooldown = np.array([
-        PROMO_TYPE_MAP[pt]['cooldown']
-        for pt in promo_types
-    ])
 
     promo_duration = np.array([np.random.choice(PROMO_TYPE_MAP[pt]['promo_duration'])
                                for pt in promo_types])
-    
-    cooldown[0] = 0
-
-    first_date = BASE_TRANSACTION_TIME_STAMP_Y1
 
     promo_start_dates = np.empty(num_of_promotions, dtype='datetime64[ns]')
 
-    last_date = first_date
+    n_y1 = int(num_of_promotions * 0.25)  # 38
+    n_y2 = int(num_of_promotions * 0.35)  # 52
+    n_y3 = num_of_promotions - n_y1 - n_y2  # remainder → 60, avoids rounding gap
 
-    for idx in range(num_of_promotions):
-        if idx == 0:
-            promo_start_dates[idx] = first_date + timedelta(days=int(cooldown[idx]))
-            last_date = pd.Timestamp(promo_start_dates[idx])
-        else:
-            promo_start_dates[idx] = last_date + timedelta(days= int(cooldown[idx]))
-            last_date = pd.Timestamp(promo_start_dates[idx])
-    
+    date_range_y1 = pd.date_range(start=BASE_TRANSACTION_TIME_STAMP_Y1, end=BASE_TRANSACTION_END_TIMESTAMP_Y1, freq='D')
+    date_range_y2 = pd.date_range(start=BASE_TRANSACTION_TIME_STAMP_Y2, end=BASE_TRANSACTION_END_TIMESTAMP_Y2, freq='D')
+    date_range_y3 = pd.date_range(start=BASE_TRANSACTION_TIME_STAMP_Y3, end=BASE_TRANSACTION_END_TIMESTAMP_Y3, freq='D')
+
+    date_weights_y1 = np.array([MONTH_WEIGHTS_PROMOTIONS_Y1[d.month - 1] for d in date_range_y1])
+    date_weights_y2 = np.array([MONTH_WEIGHTS_PROMOTIONS_Y2[d.month - 1] for d in date_range_y2])
+    date_weights_y3 = np.array([MONTH_WEIGHTS_PROMOTIONS_Y3[d.month - 1] for d in date_range_y3])
+
+    signup_weights_y1 = date_weights_y1 / date_weights_y1.sum()
+    signup_weights_y2 = date_weights_y2 / date_weights_y2.sum()
+    signup_weights_y3 = date_weights_y3 / date_weights_y3.sum()
+
+    sampled_dates_y1 = np.random.choice(date_range_y1, size=n_y1, p=signup_weights_y1)
+    sampled_dates_y2 = np.random.choice(date_range_y2, size=n_y2, p=signup_weights_y2)
+    sampled_dates_y3 = np.random.choice(date_range_y3, size=n_y3, p=signup_weights_y3)
+
+    sampled_dates = np.concatenate([sampled_dates_y1, sampled_dates_y2, sampled_dates_y3])
+
+    random_seconds = np.random.randint(0, 86400, size=len(sampled_dates))  # sized to actual total
+
+    promo_start_dates = np.array([
+    pd.Timestamp(d).date() + timedelta(seconds=int(s))
+    for d, s in zip(sampled_dates, random_seconds)
+])
     
     promo_end_dates = np.array([
     pd.Timestamp(s) + timedelta(days=int(d))
@@ -82,16 +95,16 @@ def generate_promotions(conn, num_of_promotions):
     for d in promo_end_dates
     ])
 
-    is_active = np.array([bool( CURRENT_TIMESTAMP <= d ) for d in promo_end_dates])
-    
+    is_active = pd.to_datetime(promo_end_dates) >= pd.Timestamp(CURRENT_TIMESTAMP)
+
     discount_types = np.empty(num_of_promotions, dtype=object)
 
-    y1_promo = np.where((promo_start_dates.astype('datetime64[D]')) < np.datetime64(f"{Y2}-01-01"))[0]
+    y1_promo = np.where(pd.to_datetime(promo_start_dates) < pd.Timestamp(f"{Y2}-01-01"))[0]
     y2_promo = np.where(
-    (promo_start_dates.astype('datetime64[D]') >= np.datetime64(f"{Y2}-01-01")) &
-    (promo_start_dates.astype('datetime64[D]') < np.datetime64(f"{Y3}-01-01"))
-)[0]
-    y3_promo = np.where((promo_start_dates.astype('datetime64[D]')) >= np.datetime64(f"{Y3}-01-01"))[0]
+        (pd.to_datetime(promo_start_dates) >= pd.Timestamp(f"{Y2}-01-01")) &
+        (pd.to_datetime(promo_start_dates) < pd.Timestamp(f"{Y3}-01-01"))
+    )[0]
+    y3_promo = np.where(pd.to_datetime(promo_start_dates) >= pd.Timestamp(f"{Y3}-01-01"))[0]
     discount_types[y1_promo] = np.random.choice(PROMOTION_DISCOUNT_TYPES, p = PROMOTIONS_DISCOUNT_TYPES_WEIGHTING_Y1, size=len(y1_promo))
     discount_types[y2_promo] = np.random.choice(PROMOTION_DISCOUNT_TYPES, p = PROMOTIONS_DISCOUNT_TYPES_WEIGHTING_Y2, size=len(y2_promo))
     discount_types[y3_promo] = np.random.choice(PROMOTION_DISCOUNT_TYPES, p = PROMOTIONS_DISCOUNT_TYPES_WEIGHTING_Y3, size=len(y3_promo))
