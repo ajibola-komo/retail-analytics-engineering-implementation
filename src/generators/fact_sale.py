@@ -41,9 +41,10 @@ def generate_sales(conn,num_of_transactions):
     if remaining_transactions > 0:
         in_store_dist = generate_in_store_month_distribution(remaining_transactions)
         in_store_timestamps = np.concatenate([
-        in_store_dist["y1"].to_numpy(),
-        in_store_dist["y2"].to_numpy()
-         ])
+            in_store_dist["y1"].to_numpy(),
+            in_store_dist["y2"].to_numpy(),
+            in_store_dist["y3"].to_numpy()
+        ])
         transaction_timestamps[n_sessions:] = in_store_timestamps
     items_count_list = np.random.randint(1,4, size=num_of_transactions)
     total_items = items_count_list.sum()

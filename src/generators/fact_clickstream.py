@@ -3,14 +3,16 @@ import pandas as pd
 from src.generators.month_distribution import generate_online_month_distribution
 from src.generators.segment_customers import generate_customer_segments
 from src.config.paths import (CLICKSTREAMS_DDL_PATH, CLICKSTREAMS_PARQUET_PATH)
-from src.config.constants import (PROB_OF_PURCHASE_INTENTION_Y3, SESSION_START_ID, TRAFFIC_SOURCES, TRAFFIC_WEIGHTS_Y1, TRAFFIC_WEIGHTS_Y2, TRAFFIC_WEIGHTS_Y3,
+from src.config.constants import (SESSION_START_ID, TRAFFIC_SOURCES, TRAFFIC_WEIGHTS_Y1, TRAFFIC_WEIGHTS_Y2, TRAFFIC_WEIGHTS_Y3,
                                   DEVICE_TYPES, DEVICE_WEIGHTS_Y1, DEVICE_WEIGHTS_Y2, DEVICE_WEIGHTS_Y3, SESSION_MINUTES, SESSION_WEIGHTS, 
-                                  PROB_OF_CAMPAIGN_LINKED_Y1, PROB_OF_CAMPAIGN_LINKED_Y2, PROB_OF_PURCHASE_INTENTION_Y1, PROB_OF_PURCHASE_INTENTION_Y2, 
-                                  PROB_OF_PURCHASE_Y1, PROB_OF_PURCHASE_Y2,
-                                  PROB_OF_CUSTOMER_SESSION_Y1, PROB_OF_CUSTOMER_SESSION_Y2,
+                                  PROB_OF_CAMPAIGN_LINKED_Y1, PROB_OF_CAMPAIGN_LINKED_Y2, PROB_OF_CUSTOMER_SESSION_Y1, PROB_OF_CUSTOMER_SESSION_Y2,
                                   BASE_TRANSACTION_TIME_STAMP_Y1, BASE_TRANSACTION_END_TIMESTAMP_Y1, BASE_TRANSACTION_END_TIMESTAMP_Y2,
                                   BASE_TRANSACTION_TIME_STAMP_Y2, BASE_TRANSACTION_END_TIMESTAMP_Y3, BASE_TRANSACTION_TIME_STAMP_Y3, PROB_OF_CAMPAIGN_LINKED_Y3, 
-                                  PROB_OF_CUSTOMER_SESSION_Y3, PROB_OF_PURCHASE_Y3
+                                  PROB_OF_CUSTOMER_SESSION_Y3, PROB_INTENT_CAMPAIGN_Y1, PROB_INTENT_CAMPAIGN_Y2, PROB_INTENT_CAMPAIGN_Y3,
+                                  PROB_INTENT_DIRECT_Y1, PROB_INTENT_DIRECT_Y2, PROB_INTENT_DIRECT_Y3, PROB_INTENT_ORGANIC_Y1, PROB_INTENT_ORGANIC_Y2, 
+                                  PROB_INTENT_ORGANIC_Y3, PROB_INTENT_PAID_SEARCH_Y1, PROB_INTENT_PAID_SEARCH_Y2, PROB_INTENT_PAID_SEARCH_Y3, 
+                                  PROB_INTENT_REFERRAL_Y1, PROB_INTENT_REFERRAL_Y2, PROB_INTENT_REFERRAL_Y3, PROB_PURCHASE_CAMPAIGN_Y1, PROB_PURCHASE_CAMPAIGN_Y2, PROB_PURCHASE_CAMPAIGN_Y3, 
+                                  PROB_PURCHASE_DIRECT_Y1, PROB_PURCHASE_DIRECT_Y2, PROB_PURCHASE_DIRECT_Y3, PROB_PURCHASE_ORGANIC_Y1, PROB_PURCHASE_ORGANIC_Y2, PROB_PURCHASE_ORGANIC_Y3, PROB_PURCHASE_PAID_SEARCH_Y1, PROB_PURCHASE_PAID_SEARCH_Y2, PROB_PURCHASE_PAID_SEARCH_Y3, PROB_PURCHASE_REFERRAL_Y1, PROB_PURCHASE_REFERRAL_Y2, PROB_PURCHASE_REFERRAL_Y3
                             )
 
 
@@ -76,34 +78,6 @@ def generate_clickstreams(conn,num_of_sessions_y1, num_of_sessions_y2, num_of_se
     device_types[y2_sessions] = np.random.choice(DEVICE_TYPES, p = DEVICE_WEIGHTS_Y2, size=y2_sessions.sum())
     device_types[y3_sessions] = np.random.choice(DEVICE_TYPES, p = DEVICE_WEIGHTS_Y3, size=y3_sessions.sum())
 
-    y1_product_sessions = y1_sessions & product_page_visited_flag
-    y2_product_sessions = y2_sessions & product_page_visited_flag
-    y3_product_sessions = y3_sessions & product_page_visited_flag
-
-    added_to_cart_flag[y1_product_sessions] = (
-    np.random.rand(y1_product_sessions.sum())
-    <= PROB_OF_PURCHASE_INTENTION_Y1
-    )
-
-    added_to_cart_flag[y2_product_sessions] = (
-    np.random.rand(y2_product_sessions.sum())
-    <= PROB_OF_PURCHASE_INTENTION_Y2
-    )
-
-    added_to_cart_flag[y3_product_sessions] = (
-    np.random.rand(y3_product_sessions.sum())
-    <= PROB_OF_PURCHASE_INTENTION_Y3
-    )
-
-    purchased_flag[y1_sessions] = added_to_cart_flag[y1_sessions] & (np.random.rand(y1_sessions.sum()) <= PROB_OF_PURCHASE_Y1)
-    purchased_flag[y2_sessions] = added_to_cart_flag[y2_sessions] & (np.random.rand(y2_sessions.sum()) <= PROB_OF_PURCHASE_Y2)
-    purchased_flag[y3_sessions] = added_to_cart_flag[y3_sessions] & (np.random.rand(y3_sessions.sum()) <= PROB_OF_PURCHASE_Y3)
-
-    is_customer_session[y1_sessions] = np.random.rand(y1_sessions.sum()) <= PROB_OF_CUSTOMER_SESSION_Y1
-    is_customer_session[y2_sessions] = np.random.rand(y2_sessions.sum()) <= PROB_OF_CUSTOMER_SESSION_Y2
-    is_customer_session[y3_sessions] = np.random.rand(y3_sessions.sum()) <= PROB_OF_CUSTOMER_SESSION_Y3
-    customer_ids = np.full(num_of_sessions_y1 + num_of_sessions_y2 + num_of_sessions_y3, None, dtype=object)
-
     probability_of_campaign_linked[y1_sessions] = np.random.rand(y1_sessions.sum()) <= PROB_OF_CAMPAIGN_LINKED_Y1
     probability_of_campaign_linked[y2_sessions] = np.random.rand(y2_sessions.sum()) <= PROB_OF_CAMPAIGN_LINKED_Y2
     probability_of_campaign_linked[y3_sessions] = np.random.rand(y3_sessions.sum()) <= PROB_OF_CAMPAIGN_LINKED_Y3
@@ -134,6 +108,209 @@ def generate_clickstreams(conn,num_of_sessions_y1, num_of_sessions_y2, num_of_se
     traffic_sources[~linked_to_a_campaign_flag & y1_sessions] = np.random.choice(TRAFFIC_SOURCES, p = TRAFFIC_WEIGHTS_Y1, size=(~linked_to_a_campaign_flag & y1_sessions).sum())
     traffic_sources[~linked_to_a_campaign_flag & y2_sessions] = np.random.choice(TRAFFIC_SOURCES, p = TRAFFIC_WEIGHTS_Y2, size=(~linked_to_a_campaign_flag & y2_sessions).sum())
     traffic_sources[~linked_to_a_campaign_flag & y3_sessions] = np.random.choice(TRAFFIC_SOURCES, p = TRAFFIC_WEIGHTS_Y3, size=(~linked_to_a_campaign_flag & y3_sessions).sum())
+
+    y1_product_sessions_campaign = y1_sessions & product_page_visited_flag & traffic_sources == "Campaign"
+    y2_product_sessions_campaign = y2_sessions & product_page_visited_flag & traffic_sources == "Campaign"
+    y3_product_sessions_campaign = y3_sessions & product_page_visited_flag & traffic_sources == "Campaign"
+    y1_product_sessions_direct = y1_sessions & product_page_visited_flag & traffic_sources == "Direct"
+    y2_product_sessions_direct = y2_sessions & product_page_visited_flag & traffic_sources == "Direct"
+    y3_product_sessions_direct = y3_sessions & product_page_visited_flag & traffic_sources == "Direct"
+    y1_product_sessions_organic = y1_sessions & product_page_visited_flag & traffic_sources == "Organic"
+    y2_product_sessions_organic = y2_sessions & product_page_visited_flag & traffic_sources == "Organic"
+    y3_product_sessions_organic = y3_sessions & product_page_visited_flag & traffic_sources == "Organic"
+    y1_product_sessions_paid_search = y1_sessions & product_page_visited_flag & traffic_sources == "Paid Search"
+    y2_product_sessions_paid_search = y2_sessions & product_page_visited_flag & traffic_sources == "Paid Search"
+    y3_product_sessions_paid_search = y3_sessions & product_page_visited_flag & traffic_sources == "Paid Search"
+    y1_product_sessions_referral = y1_sessions & product_page_visited_flag & traffic_sources == "Referral"
+    y2_product_sessions_referral = y2_sessions & product_page_visited_flag & traffic_sources == "Referral"
+    y3_product_sessions_referral = y3_sessions & product_page_visited_flag & traffic_sources == "Referral"
+
+    added_to_cart_flag[y1_product_sessions_campaign] = (
+    np.random.rand(y1_product_sessions_campaign
+                   .sum())
+    <= PROB_INTENT_CAMPAIGN_Y1
+    )
+
+    added_to_cart_flag[y2_product_sessions_campaign] = (
+    np.random.rand(y2_product_sessions_campaign
+                   .sum())
+    <= PROB_INTENT_CAMPAIGN_Y2
+    )
+
+    added_to_cart_flag[y3_product_sessions_campaign] = (
+    np.random.rand(y3_product_sessions_campaign
+                   .sum())
+    <= PROB_INTENT_CAMPAIGN_Y3
+    )
+
+    added_to_cart_flag[y1_product_sessions_direct] = (
+    np.random.rand(y1_product_sessions_direct
+                   .sum())
+    <= PROB_INTENT_DIRECT_Y1
+    )
+
+    added_to_cart_flag[y2_product_sessions_direct] = (
+    np.random.rand(y2_product_sessions_direct
+                   .sum())
+    <= PROB_INTENT_DIRECT_Y2
+    )
+
+    added_to_cart_flag[y3_product_sessions_direct] = (
+    np.random.rand(y3_product_sessions_direct
+                   .sum())
+    <= PROB_INTENT_DIRECT_Y3
+    )
+
+    added_to_cart_flag[y1_product_sessions_organic] = (
+    np.random.rand(y1_product_sessions_organic
+                   .sum())
+    <= PROB_INTENT_ORGANIC_Y1
+    )
+
+    added_to_cart_flag[y2_product_sessions_organic] = (
+    np.random.rand(y2_product_sessions_organic
+                   .sum())
+    <= PROB_INTENT_ORGANIC_Y2
+    )
+
+    added_to_cart_flag[y3_product_sessions_organic] = (
+    np.random.rand(y3_product_sessions_organic
+                   .sum())
+    <= PROB_INTENT_ORGANIC_Y3
+    )
+
+    added_to_cart_flag[y1_product_sessions_paid_search] = (
+    np.random.rand(y1_product_sessions_paid_search
+                   .sum())
+    <= PROB_INTENT_PAID_SEARCH_Y1
+    )
+
+    added_to_cart_flag[y2_product_sessions_paid_search] = (
+    np.random.rand(y2_product_sessions_paid_search
+                   .sum())
+    <= PROB_INTENT_PAID_SEARCH_Y2
+    )
+
+    added_to_cart_flag[y3_product_sessions_paid_search] = (
+    np.random.rand(y3_product_sessions_paid_search
+                   .sum())
+    <= PROB_INTENT_PAID_SEARCH_Y3
+    )
+
+    added_to_cart_flag[y1_product_sessions_referral] = (
+    np.random.rand(y1_product_sessions_referral
+                   .sum())
+    <= PROB_INTENT_REFERRAL_Y1
+    )
+
+    added_to_cart_flag[y2_product_sessions_referral] = (
+    np.random.rand(y2_product_sessions_referral
+                   .sum())
+    <= PROB_INTENT_REFERRAL_Y2
+    )
+
+    added_to_cart_flag[y3_product_sessions_referral] = (
+    np.random.rand(y3_product_sessions_referral
+                   .sum())
+    <= PROB_INTENT_REFERRAL_Y3
+    )
+
+    purchased_flag[y1_product_sessions_campaign] = (
+    np.random.rand(y1_product_sessions_campaign
+                   .sum())
+    <= PROB_PURCHASE_CAMPAIGN_Y1
+    )
+
+    purchased_flag[y2_product_sessions_campaign] = (
+    np.random.rand(y2_product_sessions_campaign
+                   .sum())
+    <= PROB_PURCHASE_CAMPAIGN_Y2
+    )
+
+    purchased_flag[y3_product_sessions_campaign] = (
+    np.random.rand(y3_product_sessions_campaign
+                   .sum())
+    <= PROB_PURCHASE_CAMPAIGN_Y3
+    )
+
+    purchased_flag[y1_product_sessions_direct] = (
+    np.random.rand(y1_product_sessions_direct
+                   .sum())
+    <= PROB_PURCHASE_DIRECT_Y1
+    )
+
+    purchased_flag[y2_product_sessions_direct] = (
+    np.random.rand(y2_product_sessions_direct
+                   .sum())
+    <= PROB_PURCHASE_DIRECT_Y2
+    )
+
+    purchased_flag[y3_product_sessions_direct] = (
+    np.random.rand(y3_product_sessions_direct
+                   .sum())
+    <= PROB_PURCHASE_DIRECT_Y3
+    )
+
+    purchased_flag[y1_product_sessions_organic] = (
+    np.random.rand(y1_product_sessions_organic
+                   .sum())
+    <= PROB_PURCHASE_ORGANIC_Y1
+    )
+
+    purchased_flag[y2_product_sessions_organic] = (
+    np.random.rand(y2_product_sessions_organic
+                   .sum())
+    <= PROB_PURCHASE_ORGANIC_Y2
+    )
+
+    purchased_flag[y3_product_sessions_organic] = (
+    np.random.rand(y3_product_sessions_organic
+                   .sum())
+    <= PROB_PURCHASE_ORGANIC_Y3
+    )
+
+    purchased_flag[y1_product_sessions_paid_search] = (
+    np.random.rand(y1_product_sessions_paid_search
+                   .sum())
+    <= PROB_PURCHASE_PAID_SEARCH_Y1
+    )
+
+    purchased_flag[y2_product_sessions_paid_search] = (
+    np.random.rand(y2_product_sessions_paid_search
+                   .sum())
+    <= PROB_PURCHASE_PAID_SEARCH_Y2
+    )
+
+    purchased_flag[y3_product_sessions_paid_search] = (
+    np.random.rand(y3_product_sessions_paid_search
+                   .sum())
+    <= PROB_PURCHASE_PAID_SEARCH_Y3
+    )
+
+    purchased_flag[y1_product_sessions_referral] = (
+    np.random.rand(y1_product_sessions_referral
+                   .sum())
+    <= PROB_PURCHASE_REFERRAL_Y1
+    )
+
+    purchased_flag[y2_product_sessions_referral] = (
+    np.random.rand(y2_product_sessions_referral
+                   .sum())
+    <= PROB_PURCHASE_REFERRAL_Y2
+    )
+
+    purchased_flag[y3_product_sessions_referral] = (
+    np.random.rand(y3_product_sessions_referral
+                   .sum())
+    <= PROB_PURCHASE_REFERRAL_Y3
+    )
+
+    is_customer_session[y1_sessions] = np.random.rand(y1_sessions.sum()) <= PROB_OF_CUSTOMER_SESSION_Y1
+    is_customer_session[y2_sessions] = np.random.rand(y2_sessions.sum()) <= PROB_OF_CUSTOMER_SESSION_Y2
+    is_customer_session[y3_sessions] = np.random.rand(y3_sessions.sum()) <= PROB_OF_CUSTOMER_SESSION_Y3
+    customer_ids = np.full(num_of_sessions_y1 + num_of_sessions_y2 + num_of_sessions_y3, None, dtype=object)
+
+    
 
     eligible_premium_sessions = np.where(is_customer_session & purchased_flag & ~linked_to_a_campaign_flag & prob_of_premium_sessions)[0]
     premium_starts = session_start_times[eligible_premium_sessions].to_numpy()
