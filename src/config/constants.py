@@ -22,63 +22,51 @@ COMPANY_START_DATE = date(2001,5,30)
 
 PROVINCE_CITY_MAP = {
     "Ontario": {
-        "cities": ["Toronto", "Ottawa", "Mississauga", "London", "Hamilton"],
-        "location_type": ["Urban", "Urban", "Suburban", "Suburban", "Suburban"],
-        "location_weights": [0.1, 0.07, 0.05, 0.04, 0.04]
+        "cities": ["Toronto", "Ottawa", "Mississauga", "London"],
+        "location_type": ["Urban", "Urban", "Suburban", "Suburban"],
+        "location_weights": [0.1, 0.07, 0.05, 0.03]
     },
 
     "Quebec": {
-        "cities": ["Montreal", "Quebec City", "Laval", "Gatineau"],
-        "location_type": ["Urban", "Urban", "Suburban", "Suburban"],
-        "location_weights": [0.1, 0.05, 0.03, 0.02]
+        "cities": ["Montreal", "Gatineau"],
+        "location_type": ["Urban", "Suburban"],
+        "location_weights": [0.1, 0.05]
     },
 
     "British Columbia": {
-        "cities": ["Vancouver", "Surrey", "Burnaby", "Victoria"],
-        "location_type": ["Urban", "Suburban", "Suburban", "Suburban"],
-        "location_weights": [0.08, 0.03, 0.02, 0.02]
+        "cities": ["Vancouver" ,"Burnaby"],
+        "location_type": ["Urban", "Suburban"],
+        "location_weights": [0.15, 0.05]
     },
 
     "Alberta": {
-        "cities": ["Calgary", "Edmonton", "Red Deer"],
-        "location_type": ["Urban", "Urban", "Rural"],
-        "location_weights": [0.06, 0.06, 0.03]
+        "cities": ["Calgary", "Red Deer"],
+        "location_type": ["Urban", "Rural"],
+        "location_weights": [0.1, 0.05]
     },
 
     "Manitoba": {
-        "cities": ["Winnipeg", "Brandon"],
-        "location_type": ["Urban", "Rural"],
-        "location_weights": [0.04, 0.02]
+        "cities": ["Winnipeg"],
+        "location_type": ["Urban"],
+        "location_weights": [0.12]
     },
 
     "Saskatchewan": {
-        "cities": ["Regina", "Saskatoon"],
-        "location_type": ["Suburban", "Suburban"],
-        "location_weights": [0.03, 0.01]
-    },
-
-    "Nova Scotia": {
-        "cities": ["Halifax"],
+        "cities": ["Regina"],
         "location_type": ["Suburban"],
-        "location_weights": [0.02]
+        "location_weights": [0.08]
     },
 
     "New Brunswick": {
-        "cities": ["Fredericton", "Moncton"],
-        "location_type": ["Rural", "Suburban"],
-        "location_weights": [0.03, 0.02]
+        "cities": [ "Moncton"],
+        "location_type": ["Suburban"],
+        "location_weights": [0.05]
     },
 
     "Prince Edward Island": {
         "cities": ["Charlottetown"],
         "location_type": ["Rural"],
-        "location_weights": [0.02]
-    },
-
-    "Newfoundland & Labrador": {
-        "cities": ["St. John's"],
-        "location_type": ["Suburban"],
-        "location_weights": [0.01]
+        "location_weights": [0.05]
     }
 }
 
@@ -245,8 +233,36 @@ MONTH_WEIGHTS_CAMPAIGNS_Y3 = [
 ]
 
 #------------------------------------------- CLICKSTREAMS ------------------------------------------------
-SESSION_MINUTES = [0.5, 1, 2, 3, 5, 8, 12]
-SESSION_WEIGHTS = [0.15, 0.20, 0.25, 0.20, 0.12, 0.06, 0.02]
+
+# Campaign
+CAMPAIGN_SESSION_MINUTES = [0.5, 1, 2, 3, 5, 8, 12]
+CAMPAIGN_SESSION_WEIGHTS_Y1 = [0.08, 0.12, 0.22, 0.25, 0.18, 0.10, 0.05]
+CAMPAIGN_SESSION_WEIGHTS_Y2 = [0.06, 0.11, 0.21, 0.25, 0.20, 0.11, 0.06]
+CAMPAIGN_SESSION_WEIGHTS_Y3 = [0.05, 0.10, 0.20, 0.25, 0.22, 0.12, 0.06]
+
+# Paid Search
+PAID_SEARCH_SESSION_MINUTES = [0.5, 1, 2, 3, 5, 8, 12]
+PAID_SEARCH_SESSION_WEIGHTS_Y1 = [0.10, 0.14, 0.23, 0.24, 0.16, 0.09, 0.04]
+PAID_SEARCH_SESSION_WEIGHTS_Y2 = [0.09, 0.13, 0.22, 0.25, 0.17, 0.10, 0.04]
+PAID_SEARCH_SESSION_WEIGHTS_Y3 = [0.08, 0.12, 0.22, 0.25, 0.18, 0.10, 0.05]
+
+# Organic
+ORGANIC_SESSION_MINUTES = [0.5, 1, 2, 3, 5, 8, 12]
+ORGANIC_SESSION_WEIGHTS_Y1 = [0.15, 0.20, 0.25, 0.20, 0.12, 0.06, 0.02]
+ORGANIC_SESSION_WEIGHTS_Y2 = [0.14, 0.19, 0.25, 0.21, 0.13, 0.06, 0.02]
+ORGANIC_SESSION_WEIGHTS_Y3 = [0.13, 0.18, 0.25, 0.22, 0.13, 0.07, 0.02]
+
+# Direct
+DIRECT_SESSION_MINUTES = [0.5, 1, 2, 3, 5, 8, 12]
+DIRECT_SESSION_WEIGHTS_Y1 = [0.20, 0.23, 0.25, 0.17, 0.09, 0.04, 0.02]
+DIRECT_SESSION_WEIGHTS_Y2 = [0.19, 0.22, 0.25, 0.18, 0.10, 0.04, 0.02]
+DIRECT_SESSION_WEIGHTS_Y3 = [0.18, 0.22, 0.25, 0.18, 0.10, 0.05, 0.02]
+
+# Referral
+REFERRAL_SESSION_MINUTES = [0.5, 1, 2, 3, 5, 8, 12]
+REFERRAL_SESSION_WEIGHTS_Y1 = [0.22, 0.23, 0.25, 0.17, 0.08, 0.04, 0.01]
+REFERRAL_SESSION_WEIGHTS_Y2 = [0.21, 0.23, 0.25, 0.17, 0.09, 0.04, 0.01]
+REFERRAL_SESSION_WEIGHTS_Y3 = [0.20, 0.22, 0.25, 0.18, 0.10, 0.04, 0.01]
 
 DEVICE_TYPES = ["Mobile","Tablet","Desktop"]
 DEVICE_WEIGHTS_Y1 = [0.45,0.3,0.25]
