@@ -1,5 +1,5 @@
 from src.config.constants import (BASE_TRANSACTION_END_TIMESTAMP_Y1, BASE_TRANSACTION_TIME_STAMP_Y1, MONTH_WEIGHTS_ONLINE_Y1,
-MONTH_WEIGHTS_STORE_Y1, MONTH_WEIGHTS_ONLINE_Y2, MONTH_WEIGHTS_STORE_Y2, MONTH_WEIGHTS_ONLINE_Y3, MONTH_WEIGHTS_STORE_Y3, SESSION_MINUTES, 
+MONTH_WEIGHTS_STORE_Y1, MONTH_WEIGHTS_ONLINE_Y2, MONTH_WEIGHTS_STORE_Y2, MONTH_WEIGHTS_ONLINE_Y3, MONTH_WEIGHTS_STORE_Y3, ORGANIC_SESSION_MINUTES, 
 BASE_TRANSACTION_TIME_STAMP_Y2, BASE_TRANSACTION_END_TIMESTAMP_Y2, BASE_TRANSACTION_TIME_STAMP_Y3, BASE_TRANSACTION_END_TIMESTAMP_Y3)
 import numpy as np
 import pandas as pd
@@ -57,7 +57,7 @@ def generate_online_month_distribution(num_of_records_y1, num_of_records_y2, num
         p=date_weights_y3
     )   
 
-    max_random_seconds = 86400 - (max(SESSION_MINUTES) * 60)
+    max_random_seconds = 86400 - (max(ORGANIC_SESSION_MINUTES) * 60)
 
     random_seconds_y1 = np.random.randint(0, max_random_seconds, size=num_of_records_y1)
     
