@@ -24,17 +24,17 @@ PROVINCE_CITY_MAP = {
     "Ontario": {
         "cities": ["Toronto", "Ottawa", "Mississauga"],
         "location_type": ["Urban", "Urban", "Suburban"],
-        "location_weights": [0.18, 0.08, 0.06]   # ~32% total
+        "location_weights": [0.20, 0.08, 0.07]   # ~35% total
     },
     "Quebec": {
         "cities": ["Montreal", "Gatineau"],
         "location_type": ["Urban", "Suburban"],
-        "location_weights": [0.18, 0.04]           # ~22% total
+        "location_weights": [0.14, 0.05]           # ~19% total
     },
     "British Columbia": {
         "cities": ["Vancouver", "Burnaby"],
         "location_type": ["Urban", "Suburban"],
-        "location_weights": [0.10, 0.08]           # ~18% total
+        "location_weights": [0.09, 0.04]           # ~13% total
     },
     "Alberta": {
         "cities": ["Calgary", "Red Deer"],
@@ -44,7 +44,7 @@ PROVINCE_CITY_MAP = {
     "Manitoba": {
         "cities": ["Winnipeg"],
         "location_type": ["Urban"],
-        "location_weights": [0.06]                 # ~6% total
+        "location_weights": [0.07]                 # ~7% total
     },
     "Saskatchewan": {
         "cities": ["Regina"],
