@@ -55,9 +55,23 @@ PROVINCE_CITY_MAP = {
     "Alberta": {
         "cities": ["Calgary", "Red Deer"],
         "location_type": ["Urban", "Rural"],
-        "location_weights": [0.10, 0.05]           # ~15% total
+        "location_weights": [0.10, 0.02]           # ~12% total
+    },
+    "Manitoba": {
+        "cities": ["Winnipeg"],
+        "location_type": ["Urban"],
+        "location_weights": [0.07]                 # ~7% total
+    },
+    "Saskatchewan": {
+        "cities": ["Regina"],
+        "location_type": ["Suburban"],
+        "location_weights": [0.05]                 # ~5% total
+    },
+    "Prince Edward Island": {
+        "cities": ["Charlottetown"],
+        "location_type": ["Rural"],
+        "location_weights": [0.01]                 # ~1% total
     }
-    
 }
 
 PROVINCES = list(PROVINCE_CITY_MAP.keys())
