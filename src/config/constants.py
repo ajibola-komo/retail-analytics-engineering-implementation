@@ -21,10 +21,26 @@ COMPANY_START_DATE = date(2001,5,30)
 #--------------------------- CUSTOMERS TABLE -----------------------------------------
 
 PROVINCE_CITY_MAP = {
+
+    "Saskatchewan": {
+        "cities": ["Regina"],
+        "location_type": ["Suburban"],
+        "location_weights": [0.1]                 # ~10% total
+    },
+    "Prince Edward Island": {
+        "cities": ["Charlottetown"],
+        "location_type": ["Rural"],
+        "location_weights": [0.05]                 # ~5% total
+    },
+    "Manitoba": {
+        "cities": ["Winnipeg"],
+        "location_type": ["Urban"],
+        "location_weights": [0.08]                 # ~8% total
+    },
     "Ontario": {
         "cities": ["Toronto", "Ottawa", "Mississauga"],
         "location_type": ["Urban", "Urban", "Suburban"],
-        "location_weights": [0.20, 0.08, 0.07]   # ~35% total
+        "location_weights": [0.15, 0.08, 0.07]   # ~30% total
     },
     "Quebec": {
         "cities": ["Montreal", "Gatineau"],
@@ -39,23 +55,9 @@ PROVINCE_CITY_MAP = {
     "Alberta": {
         "cities": ["Calgary", "Red Deer"],
         "location_type": ["Urban", "Rural"],
-        "location_weights": [0.10, 0.02]           # ~12% total
-    },
-    "Manitoba": {
-        "cities": ["Winnipeg"],
-        "location_type": ["Urban"],
-        "location_weights": [0.07]                 # ~7% total
-    },
-    "Saskatchewan": {
-        "cities": ["Regina"],
-        "location_type": ["Suburban"],
-        "location_weights": [0.05]                 # ~5% total
-    },
-    "Prince Edward Island": {
-        "cities": ["Charlottetown"],
-        "location_type": ["Rural"],
-        "location_weights": [0.01]                 # ~1% total
+        "location_weights": [0.10, 0.05]           # ~15% total
     }
+    
 }
 
 PROVINCES = list(PROVINCE_CITY_MAP.keys())
