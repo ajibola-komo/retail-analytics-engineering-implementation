@@ -22,21 +22,21 @@ COMPANY_START_DATE = date(2001,5,30)
 
 PROVINCE_CITY_MAP = {
     "Ontario": {
-        "cities": ["Toronto", "Ottawa", "Mississauga", "London"],
-        "location_type": ["Urban", "Urban", "Suburban", "Suburban"],
-        "location_weights": [0.1, 0.07, 0.05, 0.03]
+        "cities": ["Toronto", "Ottawa", "Mississauga"],
+        "location_type": ["Urban", "Urban", "Suburban"],
+        "location_weights": [0.1, 0.05, 0.05]
     },
 
     "Quebec": {
         "cities": ["Montreal", "Gatineau"],
         "location_type": ["Urban", "Suburban"],
-        "location_weights": [0.1, 0.05]
+        "location_weights": [0.1, 0.1]
     },
 
     "British Columbia": {
         "cities": ["Vancouver" ,"Burnaby"],
         "location_type": ["Urban", "Suburban"],
-        "location_weights": [0.15, 0.05]
+        "location_weights": [0.1, 0.1]
     },
 
     "Alberta": {
@@ -56,13 +56,6 @@ PROVINCE_CITY_MAP = {
         "location_type": ["Suburban"],
         "location_weights": [0.08]
     },
-
-    "New Brunswick": {
-        "cities": [ "Moncton"],
-        "location_type": ["Suburban"],
-        "location_weights": [0.05]
-    },
-
     "Prince Edward Island": {
         "cities": ["Charlottetown"],
         "location_type": ["Rural"],
@@ -363,9 +356,9 @@ TRANSACTION_STATUSES = [
     "Completed",
     "Returned"]
 
-TRANSACTION_WEIGHTS_Y1 = [0.92, 0.08]
-TRANSACTION_WEIGHTS_Y2 = [0.90, 0.10]
-TRANSACTION_WEIGHTS_Y3 = [0.88, 0.12]
+TRANSACTION_WEIGHTS_Y1 = [0.93, 0.07]
+TRANSACTION_WEIGHTS_Y2 = [0.95, 0.05]
+TRANSACTION_WEIGHTS_Y3 = [0.945, 0.055]
 
 TRANSACTION_TOTAL_RANGE = np.array([(20,120), (120,600), (600,3000)])
 
