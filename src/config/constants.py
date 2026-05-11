@@ -22,30 +22,16 @@ COMPANY_START_DATE = date(2001,5,30)
 
 PROVINCE_CITY_MAP = {
 
-    "Saskatchewan": {
-        "cities": ["Regina"],
-        "location_type": ["Suburban"],
-        "location_weights": [0.1]                 # ~10% total
-    },
-    "Prince Edward Island": {
-        "cities": ["Charlottetown"],
-        "location_type": ["Rural"],
-        "location_weights": [0.05]                 # ~5% total
-    },
-    "Manitoba": {
-        "cities": ["Winnipeg"],
-        "location_type": ["Urban"],
-        "location_weights": [0.08]                 # ~8% total
-    },
+    PROVINCE_CITY_MAP = {
     "Ontario": {
         "cities": ["Toronto", "Ottawa", "Mississauga"],
         "location_type": ["Urban", "Urban", "Suburban"],
-        "location_weights": [0.15, 0.08, 0.07]   # ~30% total
+        "location_weights": [0.22, 0.08, 0.07]   # ~37% total
     },
     "Quebec": {
-        "cities": ["Montreal", "Gatineau"],
-        "location_type": ["Urban", "Suburban"],
-        "location_weights": [0.14, 0.05]           # ~19% total
+        "cities": ["Montreal"],
+        "location_type": ["Urban"],
+        "location_weights": [0.20]                 # ~20% total
     },
     "British Columbia": {
         "cities": ["Vancouver", "Burnaby"],
@@ -53,19 +39,19 @@ PROVINCE_CITY_MAP = {
         "location_weights": [0.09, 0.04]           # ~13% total
     },
     "Alberta": {
-        "cities": ["Calgary", "Red Deer"],
-        "location_type": ["Urban", "Rural"],
-        "location_weights": [0.10, 0.02]           # ~12% total
+        "cities": ["Calgary"],
+        "location_type": ["Urban"],
+        "location_weights": [0.10]                 # ~10% total
     },
     "Manitoba": {
         "cities": ["Winnipeg"],
         "location_type": ["Urban"],
-        "location_weights": [0.07]                 # ~7% total
+        "location_weights": [0.05]                 # ~5% total
     },
     "Saskatchewan": {
         "cities": ["Regina"],
         "location_type": ["Suburban"],
-        "location_weights": [0.05]                 # ~5% total
+        "location_weights": [0.04]                 # ~4% total
     },
     "Prince Edward Island": {
         "cities": ["Charlottetown"],
