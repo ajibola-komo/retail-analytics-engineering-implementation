@@ -21,8 +21,6 @@ COMPANY_START_DATE = date(2001,5,30)
 #--------------------------- CUSTOMERS TABLE -----------------------------------------
 
 PROVINCE_CITY_MAP = {
-
-    PROVINCE_CITY_MAP = {
     "Ontario": {
         "cities": ["Toronto", "Ottawa", "Mississauga"],
         "location_type": ["Urban", "Urban", "Suburban"],
