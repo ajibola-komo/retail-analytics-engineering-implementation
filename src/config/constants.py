@@ -24,42 +24,37 @@ PROVINCE_CITY_MAP = {
     "Ontario": {
         "cities": ["Toronto", "Ottawa", "Mississauga"],
         "location_type": ["Urban", "Urban", "Suburban"],
-        "location_weights": [0.1, 0.05, 0.05]
+        "location_weights": [0.18, 0.08, 0.06]   # ~32% total
     },
-
     "Quebec": {
         "cities": ["Montreal", "Gatineau"],
         "location_type": ["Urban", "Suburban"],
-        "location_weights": [0.1, 0.1]
+        "location_weights": [0.18, 0.04]           # ~22% total
     },
-
     "British Columbia": {
-        "cities": ["Vancouver" ,"Burnaby"],
+        "cities": ["Vancouver", "Burnaby"],
         "location_type": ["Urban", "Suburban"],
-        "location_weights": [0.1, 0.1]
+        "location_weights": [0.10, 0.08]           # ~18% total
     },
-
     "Alberta": {
         "cities": ["Calgary", "Red Deer"],
         "location_type": ["Urban", "Rural"],
-        "location_weights": [0.1, 0.05]
+        "location_weights": [0.10, 0.02]           # ~12% total
     },
-
     "Manitoba": {
         "cities": ["Winnipeg"],
         "location_type": ["Urban"],
-        "location_weights": [0.12]
+        "location_weights": [0.06]                 # ~6% total
     },
-
     "Saskatchewan": {
         "cities": ["Regina"],
         "location_type": ["Suburban"],
-        "location_weights": [0.08]
+        "location_weights": [0.05]                 # ~5% total
     },
     "Prince Edward Island": {
         "cities": ["Charlottetown"],
         "location_type": ["Rural"],
-        "location_weights": [0.05]
+        "location_weights": [0.01]                 # ~1% total
     }
 }
 
