@@ -22,7 +22,7 @@ def generate_campaigns(conn, number_of_campaigns):
     campaign_ids = np.arange(1, number_of_campaigns + 1)
 
     # ── Date sampling ─────────────────────────────────────────────────────────
-    n_y1 = int(number_of_campaigns * 0.25)
+    n_y1 = int(number_of_campaigns * 0.3)
     n_y2 = int(number_of_campaigns * 0.35)
     n_y3 = number_of_campaigns - n_y1 - n_y2
 
