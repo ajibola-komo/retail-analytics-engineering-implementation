@@ -31,7 +31,7 @@ def create_snowflake_tables():
 def run_generators(conn):
     generate_dates(conn)
     generate_locations(conn)
-    generate_stores(conn,num_of_stores=12)
+    generate_stores(conn,num_of_stores=50)
     generate_categories(conn)
     generate_subcategories(conn)
     generate_brands(conn)

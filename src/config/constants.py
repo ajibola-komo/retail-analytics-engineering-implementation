@@ -24,7 +24,7 @@ PROVINCE_CITY_MAP = {
     "Ontario": {
         "cities": ["Toronto", "Ottawa", "Mississauga"],
         "location_type": ["Urban", "Urban", "Suburban"],
-        "location_weights": [0.22, 0.08, 0.07]   # ~37% total
+        "location_weights": [0.27, 0.12, 0.09]   # ~37% total
     },
     "Quebec": {
         "cities": ["Montreal"],
@@ -44,7 +44,7 @@ PROVINCE_CITY_MAP = {
     "Manitoba": {
         "cities": ["Winnipeg"],
         "location_type": ["Urban"],
-        "location_weights": [0.05]                 # ~5% total
+        "location_weights": [0.04]                 # ~4% total
     },
     "Saskatchewan": {
         "cities": ["Regina"],
@@ -57,6 +57,7 @@ PROVINCE_CITY_MAP = {
         "location_weights": [0.01]                 # ~1% total
     }
 }
+
 
 PROVINCES = list(PROVINCE_CITY_MAP.keys())
 
