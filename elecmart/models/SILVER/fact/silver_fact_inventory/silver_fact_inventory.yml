@@ -1,0 +1,58 @@
+version: 2
+
+models:
+  - name: silver_fact_inventory
+    description: "Silver layer table of silver_fact_inventory"
+    columns:
+      - name: inventory_id
+        tests:
+          - not_null
+          - unique
+      - name: product_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('silver_dim_product')
+              field: product_id
+      - name: store_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('silver_dim_store')
+              field: store_id
+      - name: snapshot_month
+        tests:
+          - not_null
+          - expression_is_true:
+              expression: "snapshot_month <= current_date()"
+      - name: snapshot_month_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('silver_dim_date')
+              field: month_id
+      - name: starting_stock
+        tests:
+          - expression_is_true:
+              expression: "starting_stock >= 0"
+      - name: received_stock
+        tests:
+          - expression_is_true:
+              expression: "received_stock >= 0"
+      - name: sold_units
+        tests:
+          - expression_is_true:
+              expression: "sold_units >= 0"
+      - name: shrinkage_loss
+        tests:
+          - expression_is_true:
+              expression: "shrinkage_loss >= 0"
+      - name: closing_stock
+        tests:
+          - expression_is_true:
+              expression: "closing_stock = starting_stock + received_stock - sold_units - shrinkage_loss"
+      - name: backorder_flag
+        tests:
+          - not_null
+          - accepted_values:
+              values: [true, false]
