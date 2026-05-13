@@ -60,16 +60,16 @@ Transactions can occur via:
 
 | Term | Definition |
 |---|---|
-| **Total Revenue** | Total value of goods sold after discounts |
+| **Gross Revenue** | Total value of goods sold before discounts |
 | **Net Revenue** | Revenue after discounts and returns |
 
-> Returned transactions reduce total revenue.
+> Returned transactions reduce gross revenue.
 
 ### 2.3 Customer
 
 A **customer** is an individual who interacts with the business. Customers may be:
 
-- **Registered (identified)** — linked to a `customer_id`
+- **Active Customers (identified)** — linked to a `customer_id`
 - **Guest (anonymous)** — session-only interaction
 
 ### 2.4 Promotions & Campaigns
@@ -81,7 +81,7 @@ A **customer** is an individual who interacts with the business. Customers may b
 
 ### 2.5 Inventory
 
-Inventory reflects stock levels per **product × store × time period**, tracked using monthly snapshots.
+Inventory reflects stock levels per **product × store × time period (month end)**, tracked using monthly snapshots.
 
 ---
 
@@ -93,18 +93,18 @@ Inventory reflects stock levels per **product × store × time period**, tracked
 
 - Data is generated using **Python** (Faker, NumPy)
 - Deterministic via random seed
-- Stored as **Parquet** → ingested into Snowflake
+- Stored as **Parquet** → Stored on AWS S3 → ingested into Snowflake
 - Business constraints enforced at generation time
 
 ### 3.2 Dates
 
-- **Simulation window:** 30 May 2001 → Present (~20+ years)
+- **Simulation window:** 30 May 2001 → Present Year - 1 (~20+ years)
 - Date keys use `YYYYMMDD` integer format
 - All fact records reference valid date keys
 
 ### 3.3 Customers
 
-- **Total customers:** 50,000
+- **Total customers:** 150,000
 - **Minimum age:** 18 years
 - Each customer is assigned a **persona**
 
@@ -113,6 +113,12 @@ Personas drive:
 - Purchase frequency
 - Average order value (AOV)
 - Loyalty tier
+
+#### 3.3.1 Persona Definition
+- **Tech Enthusiast:** Makes up approximately 20% of customers, age range (25 - 40). This customer segment generates the highest revenue with  the highest repeat purchase rates. 
+- **Bargain Hunter & Practical Buyer:** Makes up approximately 25% and 10% of customers respectively, age range (18 - 35) and (30,60). This segment is more likely to purchase when there is a discount attached.
+- **Gift Shopper:** Makes up approximately 5% of customers, age range (28 - 45). This is your occassional shopper, not necessarily driven by doscount.
+- **Everyday Shopper:** Makes up approximately 40% of customers, age range (30 - 50). This customer segment has the highest contribution to volume but the second highest contribution to revenue because it has a lower AOV compared to the **Tech Enthusiast**.
 
 ### 3.4 Products
 
@@ -133,11 +139,12 @@ Personas drive:
 - **Total stores:** 50
 - **Store types:** Mall, Standalone, Outlet, Warehouse
 - Opening date precedes all transactions
+- Store weights model Canada's population distribution to increase data realism
 
 ### 3.6 Transactions & Sales
 
-- **~400,000 transactions**
-- **~1.6M line items**
+- **~900,000 transactions**
+- **~1.8M line items**
 
 Each transaction references:
 
@@ -145,8 +152,10 @@ Each transaction references:
 |---|---|
 | `store_id` | ✅ Always |
 | `transaction_date_id` | ✅ Always |
-| `customer_id` | Optional (registered customers only) |
+| `customer_id` | Optional (registered customers only i.e. non-anonymous transactions) |
 | `session_id` | Optional (online only) |
+| `campaign_id` | Optional (campaign linked transactions only) |
+| `promo_id` | Optional (campaign and promotion linked transactions only) |
 
 **Calculations:**
 
@@ -166,20 +175,20 @@ line_cost         = unit_cost  × quantity
 
 > ⚠️ These are simulation assumptions, not business rules.
 
-- **~5M sessions**
-- **35%** anonymous users
+- **~14M sessions**
+- **~35%** anonymous users
 
 **Funnel probabilities:**
 
 | Stage | Probability |
 |---|---|
-| Product View → Add to Cart | 40% |
-| Add to Cart → Purchase | 30% |
+| Product View → Add to Cart | ~ 40% |
+| Add to Cart → Purchase | ~ 30% |
 
 ### 3.8 Promotions & Campaigns
 
-- **~50 promotions**
-- **~800 campaigns**
+- **~150 promotions across 3 years**
+- **~120 campaigns across 3 years**
 
 **Rules:**
 
@@ -281,6 +290,7 @@ Session → Product View → Add to Cart → Purchase
 | **Add-to-Cart Rate** | Add to Cart / Product Views |
 | **Conversion Rate** | Purchases / Sessions |
 | **Cart Abandonment Rate** | (Add to Cart − Purchases) / Add to Cart |
+| **Bounce Rate** | (Number of Pages Viewed < 2>) / Total Sessions |
 
 ### 5.5 Marketing Attribution
 
@@ -298,7 +308,7 @@ Session → Product View → Add to Cart → Purchase
 | **Campaign Sessions** | Sessions with `campaign_id` |
 | **Campaign Conversion Rate** | Purchases / Campaign Sessions |
 | **Campaign Revenue** | Revenue from attributed transactions |
-| **Promotion Attach Rate** | Transactions with promotion |
+| **Total Promotions Applied** | Transactions with promotion |
 
 ### 5.7 Traffic Source Analysis
 

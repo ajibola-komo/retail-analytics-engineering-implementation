@@ -8,9 +8,11 @@ This project simulates a modern retail analytics platform for a mid-sized electr
 - Marketing attribution
 - Inventory optimization
 
-The dataset is synthetically generated using Python (Faker, NumPy) and modeled using a modern ELT stack:
+The 3-year dataset is synthetically generated using Python (Faker, NumPy) and modeled using a modern ELT stack:
+- AWS Data Lake
 - Snowflake (Data Warehouse)
 - dbt (Transformation Layer)
+- AWS EC2 (Compute Layer)
 
 ---
 
