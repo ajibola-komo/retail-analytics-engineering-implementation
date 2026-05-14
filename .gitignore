@@ -25,5 +25,4 @@ csv/
 parquet/
 
 #tableau
-/Tableau/*.twbr
-/Tableau/Main.twb
+Tableau/
