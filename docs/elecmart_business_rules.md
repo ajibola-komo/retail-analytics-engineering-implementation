@@ -398,3 +398,12 @@ This framework enables:
 - End-to-end analytics across sales, marketing, and operations
 - Scalable reporting in Snowflake + Tableau
 - Realistic simulation of retail and e-commerce behavior
+
+---
+
+## Author
+
+**Ajibola Komolafe** — Data and Analytics Engineer
+[LinkedIn](https://www.linkedin.com/in/ajibola-k-4ba921123/) · [GitHub](https://github.com/ajibola-komo) ·
+[Tableau](https://public.tableau.com/app/profile/ajibola.komolafe/viz/Elecmart_17786325127340/ExecutiveDashboard?publish=yes) · [Kaggle Dataset](https://www.kaggle.com/datasets/ajibsss/elecmart-retail-analytics-dataset)
+
