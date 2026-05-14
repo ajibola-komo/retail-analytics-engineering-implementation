@@ -9,7 +9,7 @@ An end-to-end data engineering project simulating a mid-sized electronics retail
 | Layer | Tool |
 |---|---|
 | Data generation | Python (Faker, NumPy) |
-| Compute & Orchestration | WS EC2 (Linux), Git-based deployment |
+| Compute & Orchestration | AWS EC2 (Linux), Git-based deployment |
 | Storage | Amazon S3 |
 | Warehouse | Snowflake / DuckDB |
 | Transformation | dbt |
@@ -49,46 +49,51 @@ Star schema with 4 fact tables and 10 dimension tables.
 
 | Table | Type | Grain | Approx. rows |
 |---|---|---|---|
-| `fact_transaction` | Fact | One row per transaction | 1,200,000 |
-| `fact_sale` | Fact | One row per line item per transaction | 1,600,000 |
-| `fact_clickstream` | Fact | One row per web session | 17,000,000 |
-| `inventory` | Fact | One row per store × product × month | 282,000 |
-| `dim_date` | Dimension | One row per calendar date | 3,650 |
-| `dim_customer` | Dimension | One row per customer | 200,000 |
+| `fact_transaction` | Fact | One row per transaction | 900,000 |
+| `fact_sale` | Fact | One row per line item per transaction | ~1,800,000 |
+| `fact_clickstream` | Fact | One row per web session | 14,000,000 |
+| `fact_inventory` | Fact | One row per store × product × month | ~586,000 |
+| `dim_date` | Dimension | One row per calendar date | ~3,650 |
+| `dim_customer` | Dimension | One row per customer | ~150,000 |
 | `dim_product` | Dimension | One row per SKU | 470 |
 | `dim_store` | Dimension | One row per store | 50 |
-| `dim_promotion` | Dimension | One row per promotion | 300 |
-| `dim_campaign` | Dimension | One row per campaign | 500 |
+| `dim_promotion` | Dimension | One row per promotion | 150 |
+| `dim_campaign` | Dimension | One row per campaign | 120 |
 | `dim_category` | Dimension | One row per category | 10 |
 | `dim_subcategory` | Dimension | One row per subcategory | 28 |
 | `dim_brand` | Dimension | One row per brand | 50 |
-| `dim_location` | Dimension | One row per city | 25 |
+| `dim_location` | Dimension | One row per city | ~ 25 |
 
 ---
 
 ## Key Metrics
 ```
-Net Revenue         = SUM(transaction_total)
+Net Revenue     = (SUM(net_line_revenue) WHERE transaction_status = 'Completed')
 Profit          = Net_Revenue − Cost
 Margin %        = Profit / Revenue
 Avg daily sales = Units sold / Number of days
 Inventory turns = Units sold / Average inventory
 ```
+## Documentation
 
+Full data dictionary, modeling decisions, and metric definitions:
+[`docs/data_dictionary/`](docs/data_dictionary/)  
+[Data dictionary PDF](docs/data_dictionary/data_dictionary.pdf)  
+[Kaggle dataset](https://www.kaggle.com/datasets/ajibsss/elecmart-retail-analytics-dataset)
 ---
 
 ## Dashboards
 
 Six Tableau dashboards consume the Gold layer:
 
-- **Executive Dashboard** — tracks overall business performance including revenue trends, profit margins, top-performing products, and store-level performance.
-- **Sales Dashboard** — analyzes customer segmentation, purchasing behavior, customer lifetime value (CLV), and purchase frequency trends.
-- **Clickstream Dashboard** — monitors end-to-end user behavior including traffic sources, session journeys, funnel progression, and promotion effectiveness.
-- **Customer Dashboard** — provides a holistic view of user journeys from visits → product views → cart → purchase, including device-level engagement patterns.
-- **Clickstream Dashboard** — promotion effectiveness, traffic sources, conversion rates
-- **Marketing Dashboard** — evaluates campaign and channel performance through attribution analysis, traffic quality, and conversion efficiency.
-- **Inventory Dashboard** — tracks product demand dynamics, inventory movement, stock turnover, and category-level performance insights.
+- **Executive Dashboard** — revenue, margins, store performance
+- **Sales Dashboard** — product and transaction performance, channel analysis
+- **Clickstream Dashboard** —  funnel, session behavior, device patterns, traffic quality, and conversion efficiency
+- **Customer Dashboard** — segmentation, CLV, loyalty, purchase frequency
+- **Campaign Dashboard** — campaign,promotion, and channel performance
+- **Inventory Dashboard** — product demand dynamics, inventory movement, stock turnover.
 
+> [View dashboards on Tableau Public](https://public.tableau.com/app/profile/ajibola.komolafe/viz/Elecmart_17786325127340/ExecutiveDashboard?publish=yes)
 ---
 
 ## Data Quality
@@ -109,6 +114,7 @@ elecmart/
 ├── README.md
 ├── requirements.txt
 ├── .gitignore
+├── env_format
 │
 │
 │── raw/
@@ -120,7 +126,7 @@ elecmart/
 │
 │
 ├── sql/
-│   ├── ddl/
+│   ├── ddl/ (duckdb table definition)
 │   │   ├── dim_brand.sql
 │   │   ├── dim_campaign.sql
 │   │   ├── dim_category.sql
@@ -135,9 +141,7 @@ elecmart/
 │   │   ├── fact_sale.sql
 │   │   ├── fact_transaction.sql
 │   │   └── inventory.sql
-│   │
-├── sql/
-│   ├── snowflake_ddl/
+│   ├── snowflake_ddl/ (snowflake table definition)
 │   │   ├── dim_brand.sql
 │   │   ├── dim_campaign.sql
 │   │   ├── dim_category.sql
@@ -151,7 +155,7 @@ elecmart/
 │   │   ├── fact_clickstream.sql
 │   │   ├── fact_sale.sql
 │   │   ├── fact_transaction.sql
-│   │   └── inventory.sql
+│       └── inventory.sql
 │
 │
 ├── src/
@@ -172,7 +176,6 @@ elecmart/
 │   │   ├── date.py
 │   │   ├── fact_clickstream.py
 │   │   ├── fact_sale.py
-│   │   ├── campaigns.py
 │   │   ├── fact_transaction.py
 │   │   ├── inventory.py
 │   │   ├── location.py
@@ -182,6 +185,7 @@ elecmart/
 |   |   |── promotions.py
 |   |   |── segment_customers.py
 |   |   |── segment_stores.py
+|   |   |── stores.py
 │   │   └── subcategories.py
 |   |   
 |   |── snowflake_setup/
@@ -198,11 +202,25 @@ elecmart/
 │       ├── s3_upload.py
 │       └── snowflake_upload.py
 │
-├── raw/
-│    ├── dim_brand.csv
-│    ├── dim_category.csv
-│    ├── dim_subcategory.csv
-│    └── dim_product.csv
+├── docs/
+│       ├── elecmart_business_rules.md
+│       └──data_dictionary/
+│            ├── 00_overview.md
+│            ├── 01_data_lineage.md
+│            ├── 02_modeling_strategy.md
+│            ├── 03_dimensions.md
+│            ├── 04_facts.md
+│            ├── 05_metrics.md
+│            ├── 06_data_quality.md
+│            └── data_dictionary.pdf
+│── Tableau/
+│           ├── Elecmart.twbx
+│           ├── clickstreams.hyper
+│           ├── INVENTORY.hyper
+│           ├── customer.hyper
+│           └──sales.hyper
+│
+│
 │
 └── elecmart/ (dbt)
     ├── analyses/
@@ -262,27 +280,36 @@ elecmart/
     │   │   └── fact/
     │   │       ├── silver_fact_clickstream
     │   │       │   ├── tests/
-    │   │       │   │    └── 
+    │   │       │   │    ├── campaign_id_to_traffic_source.sql
+    │   │       │   │    └── funnel_logic.sql
+    │   │       │   │                        
     │   │       │   ├── silver_fact_clickstream.sql
     │   │       │   └── silver_fact_clickstream.yml
     │   │       ├── silver_fact_inventory
-    │   │       │   ├── tests/
-    │   │       │   │    └── 
     │   │       │   ├── silver_fact_inventory.sql
     │   │       │   └── silver_fact_inventory.yml
     │   │       ├── silver_fact_sale
-    │   │       │   ├── tests/
-    │   │       │   │    └── 
     │   │       │   ├── silver_fact_sale.sql
     │   │       │   └── silver_fact_sale.yml
     │   │       └──silver_fact_transaction
-    │   │           ├── tests/
-    │   │           │    └── 
     │   │           ├── silver_fact_transaction.sql
     │   │           └── silver_fact_transaction.yml
     │   │
     │   │
     │   └── GOLD/
+    │   │   ├── dimensions/
+    │   │   │   ├── gold_dim_campaign.sql
+    │   │   │   │── gold_dim_customer.sql
+    │   │   │   │── gold_dim_date.sql
+    │   │   │   │── gold_dim_product.sql
+    │   │   │   │── gold_dim_promotion.sql
+    │   │   │   └── gold_dim_store.sql
+    │   │   ├── facts/
+    │   │   │   │── gold_fact_clickstream.sql
+    │   │   │   │── gold_fact_inventory.sql
+    │   │   │   │── gold_fact_sale.sql
+    │   │   │   │── gold_fact_transaction.sql
+    │   │   │   └── schema.yml
     │       
     ├── seeds
     ├── snapshots
@@ -297,20 +324,44 @@ elecmart/
 
 ## Setup
 
-**Prerequisites:** Python 3.x · dbt · Snowflake account · AWS S3 credentials
+**Prerequisites:** Python 3.x · dbt · Snowflake account · AWS S3 credentials · AWS EC2 Instance 
+- create an S3 bucket called 'elecmart-bucket'
+    - Create IAM credentials
+    - Configure AWS CLI locally
+    - Update your `elecmart/.env` file with your AWS credentials
+- create an EC2 instance with the following configurations:
+    - **Amazon Machine Image** - Ubuntu Server 24.04 LTS (HVM), SSD Volume Type
+    - **Architecture** - 64-bit (x86)
+    - **Instance Type** - r6i.xlarge
+    - **Key Pair** - Create a new key pair type .pem or use your existing formats
+    - Download the .pem file
+    - **Configure Storage** - 1x 100 GiB gp3
+
+- Connect to your EC2 instance through VSCode
+
 ```bash
 git clone https://github.com/ajibola-komo/Elecmart-Retail-and-Ecommerce-Performance-Analytics.git
-cd elecmart
+cd Elecmart-Retail-Analytics-Pipeline
+sudo apt update
+sudo apt upgrade -y
+sudo apt autoremove -y
+sudo apt install python3-venv -y
+python3 -m venv venv
+source venv/bin/activate
+pip install --upgrade pip
 pip install -r requirements.txt
+source venv/bin/activate
+mkdir -p data/parquet/exports
 ```
-
-Update `elecmart/.env` with your Snowflake and AWS credentials, then run:
+Create `.env` file using the format from `env_format`
+Update `Elecmart-Retail-Analytics-Pipeline/.env` with your Snowflake and AWS credentials, then run:
 ```bash
 python -m src.generators.main
 ```
-
 ---
 
 ## Author
 
-**Ajibola Komolafe** — Data and Analytics Engineer (With Project Experience)
+**Ajibola Komolafe** — Data and Analytics Engineer
+[LinkedIn](https://www.linkedin.com/in/ajibola-k-4ba921123/) · [GitHub](https://github.com/ajibola-komo)
+[Tableau](https://public.tableau.com/app/profile/ajibola.komolafe/viz/Elecmart_17786325127340/ExecutiveDashboard?publish=yes) · [Kaggle Dataset](https://www.kaggle.com/datasets/ajibsss/elecmart-retail-analytics-dataset)
