@@ -49,9 +49,9 @@ Star schema with 4 fact tables and 10 dimension tables.
 
 | Table | Type | Grain | Approx. rows |
 |---|---|---|---|
-| `fact_transaction` | Fact | One row per transaction | 900,000 |
+| `fact_transaction` | Fact | One row per transaction | ~900,000 |
 | `fact_sale` | Fact | One row per line item per transaction | ~1,800,000 |
-| `fact_clickstream` | Fact | One row per web session | 14,000,000 |
+| `fact_clickstream` | Fact | One row per web session | ~14,000,000 |
 | `fact_inventory` | Fact | One row per store × product × month | ~586,000 |
 | `dim_date` | Dimension | One row per calendar date | ~3,650 |
 | `dim_customer` | Dimension | One row per customer | ~150,000 |
@@ -363,5 +363,5 @@ python -m src.generators.main
 ## Author
 
 **Ajibola Komolafe** — Data and Analytics Engineer
-[LinkedIn](https://www.linkedin.com/in/ajibola-k-4ba921123/) · [GitHub](https://github.com/ajibola-komo)
+[LinkedIn](https://www.linkedin.com/in/ajibola-k-4ba921123/) · [GitHub](https://github.com/ajibola-komo) ·
 [Tableau](https://public.tableau.com/app/profile/ajibola.komolafe/viz/Elecmart_17786325127340/ExecutiveDashboard?publish=yes) · [Kaggle Dataset](https://www.kaggle.com/datasets/ajibsss/elecmart-retail-analytics-dataset)
