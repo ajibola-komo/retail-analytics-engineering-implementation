@@ -213,12 +213,14 @@ elecmart/
 │            ├── 05_metrics.md
 │            ├── 06_data_quality.md
 │            └── data_dictionary.pdf
-│── Tableau/
-│           ├── Elecmart.twbx
-│           ├── clickstreams.hyper
-│           ├── INVENTORY.hyper
-│           ├── customer.hyper
-│           └──sales.hyper
+│          ── architecture_diagrams/
+│            ├── dbt-dag.png
+│            ├── 
+│            ├── 
+│            ├── 
+│            └──
+│          ── metrics/
+│            └──metrics_definition.md
 │
 │
 │
