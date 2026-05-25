@@ -8,16 +8,30 @@ sources:
 
     tables:
       - name: dim_customer
+        description: "Customer dimension table containing customer details such as name, email, and address."
       - name: dim_campaign
+        description: "Campaign dimension table containing campaign details."
       - name: dim_date
+        description: "Date dimension table containing date-related attributes."
       - name: dim_category
+        description: "Category dimension table containing product category information."
       - name: dim_subcategory
+        description: "Subcategory dimension table containing product subcategory information."
       - name: dim_brand
+        description: "Brand dimension table containing brand information."
       - name: dim_product
+        description: "Product dimension table containing product details."
       - name: dim_location
+        description: "Location dimension table containing location information."
       - name: dim_promotion
+        description: "Promotion dimension table containing promotion details."
       - name: dim_store
+        description: "Store dimension table containing store information."
       - name: fact_clickstream
+        description: "Fact table containing clickstream data."
       - name: fact_sale
+        description: "Fact table containing sales data."
       - name: fact_transaction
+        description: "Fact table containing transaction data."
       - name: inventory
+        description: "Inventory fact table containing inventory information."
