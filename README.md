@@ -1,20 +1,143 @@
-# Elecmart Retail Analytics Pipeline
+# Retail Analytics Engineering Project
 
-An end-to-end data engineering project simulating a mid-sized electronics retailer's 3-year performance and covering the full analytics lifecycle: synthetic data generation, cloud storage, warehouse ingestion, dbt transformation, and Tableau dashboards.
+## Overview
 
----
+The Retail Analytics Engineering Platform is a production-grade analytics engineering project built to modernize and extend the capabilities of the original [ElecMart analytics solution](https://github.com/ajibola-komo/Elecmart-Retail-Analytics-Pipeline).
 
-## Tech Stack
+While the initial ElecMart project successfully delivered descriptive reporting for retail operations, it lacked the analytical depth, orchestration, and semantic modelling required to support advanced business intelligence and diagnostic analytics. This project addresses those limitations by rebuilding the analytics architecture from the ground up using modern analytics engineering principles.
 
-| Layer | Tool |
-|---|---|
-| Data generation | Python (Faker, NumPy) |
-| Compute & Orchestration | AWS EC2 (Linux), Git-based deployment |
-| Storage | Amazon S3 |
-| Warehouse | Snowflake / DuckDB |
-| Transformation | dbt |
-| Visualization | Tableau |
+The platform introduces a robust transformation layer, enhanced semantic models, automated orchestration workflows, and redesigned Power BI dashboards to create a scalable and maintainable analytics ecosystem capable of supporting both operational reporting and strategic decision-making.
 
+## Project Objectives
+
+The primary objectives of this project are:
+
+* Redesign the semantic layer to support deeper diagnostic analytics and business investigation workflows
+* Establish standardized business metrics and KPI definitions across the organization
+* Implement production-ready data modelling practices using dbt
+* Automate daily synthetic data generation and ingestion workflows using Apache Airflow
+* Improve data quality, governance, testing, and documentation
+* Rebuild executive and operational dashboards in Power BI using business-focused data marts
+* Simulate a real-world analytics engineering environment with automated data pipelines and scheduled refreshes
+
+## Business Problem
+
+Retail organizations often struggle to move beyond descriptive reporting due to fragmented data models, inconsistent metric definitions, and tightly coupled reporting logic.
+
+The original ElecMart solution provided visibility into key business metrics such as revenue, orders, products, and customers. However, it offered limited capability for answering deeper business questions such as:
+
+* Why are sales declining in specific product categories?
+* What factors contribute to customer churn?
+* Which customer segments generate the highest lifetime value?
+* What operational factors influence inventory performance?
+* How do promotions impact customer purchasing behaviour?
+* Which products drive repeat purchases and retention?
+
+To answer these questions effectively, organizations require a well-designed semantic layer that enables drill-down analysis, dimensional slicing, and root-cause investigation.
+
+This project focuses on building that analytical foundation.
+
+## Solution Architecture
+
+The platform consists of four major components:
+
+### 1. Automated Data Generation
+
+A Python-based synthetic data generation framework produces realistic retail business data including:
+
+* Customers
+* Transactions
+* Sales
+* Products
+* Inventory
+* Marketing campaigns
+* Promotions
+* Clickstreams
+* Returns and refunds
+
+### 2. Workflow Orchestration
+
+Apache Airflow orchestrates the daily execution of the platform by:
+
+* Generating new transactional data
+* Loading files into cloud storage
+* Triggering warehouse ingestion processes
+* Running dbt transformation pipelines
+* Executing data quality tests
+* Refreshing analytics datasets
+
+### 3. Analytics Engineering Layer
+
+The transformation layer is built using dbt and follows a layered architecture:
+
+* Staging Models
+* Intermediate Models
+* Core Business Models
+* Dimensional Models
+* Analytics Data Marts
+* Semantic Layer Models
+
+Key features include:
+
+* Incremental processing
+* Data quality testing
+* Documentation generation
+* Lineage tracking
+* Reusable business logic
+* Centralized KPI definitions
+
+### 4. Business Intelligence Layer
+
+Power BI dashboards are rebuilt using curated semantic models designed specifically for business investigation and decision support.
+
+Dashboard areas include:
+
+* Executive Performance Overview
+* Revenue and Profitability Analysis
+* Customer Analytics
+* Product Performance Analysis
+* Inventory and Supply Chain Analytics
+* Marketing Performance Analytics
+* Customer Retention and Cohort Analysis
+* Root Cause and Diagnostic Analysis
+
+## Key Enhancements Over the Original ElecMart Project
+
+| Original ElecMart Project      | Retail Analytics Engineering Platform   |
+| ------------------------------ | --------------------------------------- |
+| Basic reporting layer          | Advanced semantic layer                 |
+| Descriptive analytics          | Diagnostic analytics                    |
+| Static data generation         | Automated daily data generation         |
+| Manual execution               | Airflow orchestration                   |
+| Dashboard-focused architecture | Analytics platform architecture         |
+| Limited business dimensions    | Rich dimensional modelling              |
+| Basic KPI calculations         | Centralized metric governance           |
+| Minimal testing                | Production-grade data quality framework |
+| Simple star schemas            | Business-oriented analytics marts       |
+| Report consumption             | Investigation and decision support      |
+
+## Technology Stack
+
+* Python
+* Apache Airflow
+* dbt Core
+* Snowflake
+* Google Cloud Storage (GCS)
+* SQL
+* Power BI
+* Git
+
+## Expected Outcomes
+
+By the completion of this project, the platform will demonstrate:
+
+* Production-ready analytics engineering workflows
+* Advanced dimensional modelling techniques
+* End-to-end orchestration and automation
+* Robust semantic layer design
+* Diagnostic analytics capabilities
+* Executive-ready business intelligence solutions
+* Analytics engineering best practices used in modern data organizations
 ---
 
 ## Architecture
@@ -80,20 +203,7 @@ Full data dictionary, modeling decisions, and metric definitions:
 [`docs/data_dictionary/`](docs/data_dictionary/)  
 [Data dictionary PDF](docs/data_dictionary/data_dictionary.pdf)  
 [Kaggle dataset](https://www.kaggle.com/datasets/ajibsss/elecmart-retail-analytics-dataset)
----
 
-## Dashboards
-
-Six Tableau dashboards consume the Gold layer:
-
-- **Executive Dashboard** — revenue, margins, store performance
-- **Sales Dashboard** — product and transaction performance, channel analysis
-- **Clickstream Dashboard** —  funnel, session behavior, device patterns, traffic quality, and conversion efficiency
-- **Customer Dashboard** — segmentation, CLV, loyalty, purchase frequency
-- **Campaign Dashboard** — campaign,promotion, and channel performance
-- **Inventory Dashboard** — product demand dynamics, inventory movement, stock turnover.
-
-> [View dashboards on Tableau Public](https://public.tableau.com/app/profile/ajibola.komolafe/viz/Elecmart_17786325127340/ExecutiveDashboard?publish=yes)
 ---
 
 ## Data Quality
